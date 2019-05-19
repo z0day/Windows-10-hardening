@@ -1,0 +1,7 @@
+# Exclude Screenshots
+Screenshots/*
+!Screenshots/**/
+
+# Exclduing Todo
+ToDO.md
+

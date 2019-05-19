@@ -1,17 +1,27 @@
 ### My Windows 10 Configuration
 
-**This _quick_ guide was written because constantly asking me since over 10 years what I use, so here we are...**
+**This guide was written because I constantly get asked (since over 10 years) what I use, so here we are...**
 
-First of all a promise, if this guide gets 1000 stars I will explain everything single detail until then I keep it short because it could be overwhelming (especially for beginners).
+<details>
+  <summary>Intro</summary>
+  First of all a promise, if this guide gets 1000 stars I will explain everything single detail until then I keep it short because it could be overwhelming (especially for beginners).
+</details>
 
-I only use (since around 8 years now) Windows for Gaming or when I have to work in an environment which forces me to use Windows e.g. Enterprise/SysAdmin. I still due a lot of tests on Windows and Windows itself was (and still is) a huge part of my life. I often like to share my knowledge with others and I hope I can help someone.
+I only use - since around 8 years now - Windows for Gaming reasons, or when I have to work in an environment which forces me to use Windows e.g. Enterprise/SysAdmin/VM. I still due a lot of tests on Microsoft Windows and Windows itself was (and still is) a huge part of my life. I often like to share my knowledge with others and I hope I can help someone with this little guide.
 
 
-### Daily OS which I use & love
+### What this guide will not cover
+
+* Server / Domain
+* SMB (it's removed/disabled), same like other components
+* Surfing on [websites which are known as problematic](http://darkpatterns.org/)
+
+
+### Daily OS (which I use)
 
 My main OS is: [MX Linux MX-18 Continuum](https://en.wikipedia.org/wiki/MX_Linux).
 
-Feel free to start a discussion that [Arch Linux](https://www.archlinux.org/) is "better". It's not (for me). The reason why I don't use a "hardened" Linux OS like [Qubes OS](https://www.qubes-os.org/downloads/) is that the performance is terrible because it does not work well with proprietary nVidia drivers & it requires (same like Arch Linux) too much configuration to make it a OS which I would use for my daily needs. 
+Feel free to start a discussion that [Arch Linux](https://www.archlinux.org/) is "better". It's not (for me). The reason why I don't use a "hardened" Linux OS like [Qubes OS](https://www.qubes-os.org/downloads/) is that the performance is terrible because it does not work well with proprietary nVidia drivers & it requires (same like Arch Linux) too much configuration to make it a OS which I would use for my daily needs.
 
 
 __However, I recommend as "hardened Linux OS" (Debian based OS)__
@@ -24,23 +34,24 @@ __However, I recommend as "hardened Linux OS" (Debian based OS)__
 
 I mainly use the programs & configuration because of the following reasons:
 
-- Avoiding data leaks 
+- Avoiding data leaks
 - CPU usage
 - Network usage & leaks
 - Testing
 - Trust
 - Usability
-- Windows own "utilities" should be preferred over third-party applications (because third-party programs also only _cook with water_)
+- I believe the Windows own "utilities" should be preferred over third-party applications (because third-party programs also only _cook with water_).
 
 
-### Guide philosophy 
+### Guide philosophy
 
 - Knowledge is power ([Scientia potentia est](https://en.wiktionary.org/wiki/scientia_potentia_est))
 - Security can't be reached by using the _right utilities_ it is moreover a "concept or idea" which requires you to constantly monitor threats and react accordingly to the known attacks.
 - [Privacy & Security are not the same](https://www.itu.int/en/ITU-D/Regional-Presence/ArabStates/Documents/events/2017/CYB-ET/Pres/8-4%20Waleed%20Hagag_PrivacyVSSecurity.pdf))
 - If you distrust Microsoft Windows then don't use it (!) and don't install third-party programs because why trust another company which might collect your data or increase the risk to expose you.
 - I do not believe in Anti-Virus programs or signature based databases. A [HIPS](https://en.wikipedia.org/wiki/Intrusion_detection_system) can be useful, that is correct but I believe a firewall together & combined with the OS security mechanism are usually "enough" because an attacker has to bypass all of it first to get the required permission to do something possible harmful.
-- [Layered security](https://en.wikipedia.org/wiki/Layered_security) is what this guides offers
+- [Layered security](https://en.wikipedia.org/wiki/Layered_security) is what this guides offers.
+- [Make your cyber security life easier with daily routines](https://theinvisiblethings.blogspot.com/2011/03/partitioning-my-digital-life-into.html)
 
 
 ## What qualifies me?
@@ -59,7 +70,7 @@ None (_as far as I know_).
 I usually use [NTLite](https://www.ntlite.com/) or [MSGM Toolkit](http://m.majorgeeks.com/files/details/msmg_toolkit.html) (_I will ditch NTLite the moment MSGM gets a GUI_) to slim down `Windows 10 x64 Enterprise / LTSC`. I always use the latest final version (no matter what).
 
 
-I prefer Enterprise over LTSC, why? Because it gets feature updates more often, some of these updates are of course controversial since they are not adding any "security" layer/benefit, but there are examples when such features updates are _cool_ e.g. when Windows Defender integrated [EMET](https://support.microsoft.com/en-us/help/2458544/the-enhanced-mitigation-experience-toolkit) which was an important step into the right direction and necessary. [Yes, Enterprise has the Store](https://en.wikipedia.org/wiki/Windows_10_editions) and what not but you can disable or remove it (if you want). 
+I prefer Enterprise over LTSC, why? Because it gets feature updates more often, some of these updates are of course controversial since they are not adding any "security" layer/benefit, but there are examples when such features updates are _cool_ e.g. when Windows Defender integrated [EMET](https://support.microsoft.com/en-us/help/2458544/the-enhanced-mitigation-experience-toolkit) which was an important step into the right direction and necessary. [Yes, Enterprise has the Store](https://en.wikipedia.org/wiki/Windows_10_editions) and what not but you can disable or remove it (if you want).
 
 
 __About LTSC because I hear this like 100 times a day__
@@ -78,6 +89,30 @@ __Stuff I remove/integrate or change (_it's pretty much common_)__
 - Some [services.msc tweaks](http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/) to decrease the overall CPU/RAM usage and to migrate possible attack scenarios on e.g. WPAD/NetBios etc.
 
 
+### Full Disk Encryption (FDE)
+
+* FDE does not protect you against data theft exfiltration (you still can get infected while you are on the unlocked partition)
+* Your system is completely protected only when your machine is fully powered down (assuming the crypto is strong enough).
+* The strongest crypto is pointless if you make beginner mistakes or reveal somehow your passphrase.
+
+
+**About MS own Bitlocker**
+
+[Bitlocker is controversial](https://en.wikipedia.org/wiki/BitLocker#Security_concerns) but sometimes you simply can't work with VeraCrypt e.g. in an enterprise environment but this is a "MS problem" because they refuse to work hand-in-hand together with the VeraCrypt team. The main issue is whenever the booloader is changed (can happen after every KB update you install) you can't just simply manually recover the original bootloader on let's say 500+ machines. In such an environment I highly recommend to stick with Bitlocker but [only with several modifications](https://www.contextis.com/en/blog/hardware-encryption-weaknesses-and-bitlocker) because the default settings are not the strongest ones.
+
+
+**Which VeraCrypt settings?**
+
+[VeraCrypt](https://www.veracrypt.fr/) is what I use and like, it works on all systems (Linux/Windows) very well except when I install a KB... The bootloading recovery option is okay and _does not take that long in order to fix the boot issue_.
+
+The [algorithm you use doesn't matter that much](https://security.stackexchange.com/questions/170273/veracrypt-which-encryption-algorithm-hash-algorithm-to-use) because the attacker will break your password _somehow_ first. The most easiest way is via a keylogger.
+
+
+To answer the question, I use:
+- [AES-Twofish-Serpent](https://superuser.com/questions/207831/which-truecrypt-algorithm-is-the-safest) with [SHA-512](https://www.veracrypt.fr/en/SHA-512.html)
+
+
+
 ## Telemetry and why I disabled it in Windows 10
 
 _With great power comes a great responsibility_, which means I don't like/want that MS uses my personal data to sell it to unknown strangers or make additional money (I already paid for the OS). I simply think that's the wrong way and idea behind telemetry. There is also no single prove that those data really helped to improve the OS if MS could provide evidence that those data really "changed" something fundamentally compared to normal user feedback I would maybe consider to opt-in.
@@ -86,13 +121,13 @@ In short:
 - My data are my data ([MS is known to sell those telemetry data](https://betanews.com/2016/11/24/microsoft-shares-windows-10-telemetry-data-with-third-parties/))
 - The current telemetry data implementation in fact does affect the overall OS performance, it got improved over time but it's still has some flaws (e.g. it does not detect if you game or not)
 - Does OS telemetry helps to push the OS or does it only help Microsoft to make money (?!)
-- Telemetry is by default opt-out not opt-in 
+- Telemetry is by default opt-out not opt-in
 - Data traffic (it's less than you think but still a bummer in case you game and the OS just decided to submit something)
 - [Almost no control over it](https://techcrunch.com/2018/01/24/windows-10-can-now-show-you-the-telemetry-data-its-sending-back-to-microsoft/), there should be rules when, what and how data shall be transmitted
 
 Telemetry itself is however not what I would call "the devil". I think it would be okay to collect data if I know those data are fully encrypted and are only stored for let's say 14 days. MS should in my opinion not be allowed to sell those data because you choose to give MS the data to improve the OS and not to make some quick money.
 
-I often argue with the "NSA argument" here: _Not the ones which collecting the most data are automatically the ones which are most powerful, only the ones which truly understand those data are the ones with "power"_. Exactly what William "Bill" Binney said [here](https://www.youtube.com/watch?v=uYg_0Imrnr4). 
+I often argue with the "NSA argument" here: _Not the ones which collecting the most data are automatically the ones which are most powerful, only the ones which truly understand those data are the ones with "power"_. Exactly what William "Bill" Binney said [here](https://www.youtube.com/watch?v=uYg_0Imrnr4).
 
 
 ### Windows Activation
@@ -110,14 +145,15 @@ I'm strictly against Anti-Virus software because of the following reasons:
 
 - Paid, _not all of them of course_
 - Windows own Defender is "enough" if you really need want an AV (see AV-Tests.org)
-- Reputation based detection is mostly powered by the cloud (those data are submitted by you)
-- [Data leaks](https://arstechnica.com/information-technology/2017/01/antivirus-is-bad/) because of "cloud features" (of course you can disable the cloud in most AV's like in Kaspersky buit not in every AV)
+- Reputation based detection is mostly powered by the cloud (those data are submitted by ... you!)
+- [Data leaks](https://arstechnica.com/information-technology/2017/01/antivirus-is-bad/) because of "cloud features" (of course you can disable the cloud in most AV's like in Kaspersky, but not in every AV!)
 - Trust, why trust another vendor when you already decided to trust MS (by installing Windows and accepting their EULA?)
 - Higher CPU/RAM consumption (especially during scans)
 - [Unnecessary](https://blog.emsisoft.com/en/30508/antivirus-is-all-snake-oil-and-harms-your-security-yeah-nah/)
 - Possible OS slow-downs
+- [Bugs](https://bugs.chromium.org/p/project-zero/issues/list?can=1&q=owner%3Ataviso%40google.com) (like in every software)
 - Higher network usage because of program updates & signature updates
-- AV can be a risk by itself due to software bugs (I know it affects every software I install) but a lot of AV's installing their own certificate to analyze or intercept into your traffic which is dangerous (TLS breakage e.g. Avast). 
+- AV can be a risk by itself due to software bugs (I know it affects every software I install) but a lot of AV's installing their own certificate to analyze or intercept into your traffic which is dangerous (TLS breakage e.g. Avast).
 - [Google does not use an AV product](https://nakedsecurity.sophos.com/2014/07/09/googles-android-security-chief-dont-bother-with-anti-virus-is-he-serious/) (_I think they know best cause they have a huge experience_)
 - Hackers can check their products against VirusTotal and other engines/signatures to check if they are fully undetectable (fud).
 - _An AV is not an replacement for your brain_ (not an argument but brings us right to the point of this little guide and why you should harden Windows 10)
@@ -127,7 +163,7 @@ I'm strictly against Anti-Virus software because of the following reasons:
 
 I typically review every single update before I use/install it, since I'm on Enterprise/LTSC there is not much to review because there is only one single [KB](https://en.wikipedia.org/wiki/Windows_Update) each month which I have to install. The reason no one should ever use Home/Pro versions are that these versions are crippled in their features and MS literally tests KB's on you.
 
-I personally prefer [WuMgr](https://github.com/DavidXanatos/wumgr) to check for updates and control the Windows update mechanism. 
+I personally prefer [WuMgr](https://github.com/DavidXanatos/wumgr) to check for updates and control the Windows update mechanism.
 
 If you obsessed with updates check out [AskWoody](https://www.askwoody.com/) he and the community decided to inspect every KB and classify them into "MS-Defcon" levels.
 
@@ -144,10 +180,11 @@ My strategy or idea behind this is that if - if I ever get infected I can just _
 I prefer hardware security over software security (assuming that the hardware I use is not compromised). I see this as "best" defense because software can  _easier_ bypassed or can fail/manipulated while hardware usually needs physically access in order to manipulate it. _I know [stuxnet](https://en.wikipedia.org/wiki/Stuxnet) is an example which proves me wrong on this but you know what I mean_.
 
 * Raspberry-PI as DNS Server & [Ad-Blocker](https://pi-hole.net/).
-* I use my [own DNSCryptProxy resolver](https://github.com/jedisct1/dnscrypt-proxy) which works directly on my Router OS/Firmware which forwards it directly to my Raspberry-PI to avoid getting a slow upstream resolver performance while blocking ads or filtering the web. 
+* I use my [own DNSCryptProxy resolver](https://github.com/jedisct1/dnscrypt-proxy) which works directly on my Router OS/Firmware which forwards it directly to my Raspberry-PI to avoid getting a slow upstream resolver performance while blocking ads or filtering the web.
 * I use [Perfect Privacy VPN](https://www.perfect-privacy.com/) but I still test [PIA](https://deu.privateinternetaccess.com/) & [ProtonVPN](https://protonvpn.com/) whenever I have time. I might switch to [WireGuard](https://www.wireguard.com/) & [Mullvad](http://www.mullvad.net/) (_depending if PP will soon enable WireGuard support or not._)
 * I use [OpenWRT](https://openwrt.org/) as Router OS/Firmware.
 * I use [Linksys WRT AC3200](https://www.linksys.com/at/support-article?articleNum=208662). I do have other Routers because I have a business line and a home DSL line, on the home line I use [FRITZ!Box 7590](https://avm.de/produkte/fritzbox/fritzbox-7590/) with FritzOS (because OpenWRT is not ready for the 7590).
+* Windows Login + Applications [2FA](https://www.nitrokey.com/documentation/two-factor-generic) via [NitroKey](https://www.nitrokey.com/)
 
 
 ### Software I use on Windows
@@ -156,10 +193,10 @@ I in general try to avoid running or installing a lot of programs but I name a f
 
 * I use [ProtonMail](https://protonvpn.com/) as primary eMail provider. I previously used [GMail](https://www.google.com/gmail/) but [with encryption](https://www.enigmail.net/index.php/en/) & [Thunderbird](https://www.thunderbird.net/). I did not switched because "Google spy" more because I got a Premium ProtonVPN for free, there was never a "data or security breach" for me with GMail & [Enigmail](https://www.enigmail.net/index.php/en/) (_Enigmail itself had some issue in the past which got fixed very fast_). I use [ElectronMail](https://github.com/vladimiry/ElectronMail) as utility to fetch & write eMails.
 * [Riot](https://riot.im/) / [Matrix](https://matrix.org/docs/spec/) & [Discord](https://discordapp.com/) as primary chat platform. I grew up as IRC "kid" so I like chats & emotes I guess everyone has a weakness this is mine. In addition for Discord I use [BetterDiscord](https://betterdiscord.net/) with [Simple DiscordCrypt](https://gitlab.com/An0/SimpleDiscordCrypt) to provide [end-to-end encryption](https://en.wikipedia.org/wiki/End-to-end_encryption).
-* I use [Brave](https://brave.com/) as Browser. I also like Chromium (Edge).
-* I use [Tor Browser](https://www.torproject.org/download/) whenever I like to get some Onion's.
-* I use [KeePass](https://keepass.info/) with some plugins to store my passwords & some notes.
-* I use [OSArmor](https://www.novirusthanks.org/products/osarmor/) because [AppGuard](https://docs.microsoft.com/de-de/windows/security/threat-protection/windows-defender-application-guard/wd-app-guard-overview) is still a mess.
+* [Brave](https://brave.com/) as Browser. I also like MS Chromium (Edge).
+* [Tor Browser](https://www.torproject.org/download/) whenever I like to get some Onion's.
+* [KeePass](https://keepass.info/) with some plugins to store my passwords & some notes.
+* [OSArmor](https://www.novirusthanks.org/products/osarmor/) because [AppGuard](https://docs.microsoft.com/de-de/windows/security/threat-protection/windows-defender-application-guard/wd-app-guard-overview) is still a mess.
 * I use [madVR](https://forum.doom9.org/showthread.php?t=146228) together with [MPC-BE](https://forum.doom9.org/showthread.php?t=165890) & [XYSubFilters](https://forum.doom9.org/showthread.php?t=168282) because I believe it delivers the best visual quality.
 * I use [Visual Studio Enterprise](https://visualstudio.microsoft.com/de/vs/) & [VSCodium](https://github.com/VSCodium/vscodium) with several extensions.
 * [ProcessHacker](https://processhacker.sourceforge.io/) with some plugins which would trigger AV programs & Steam anti-cheat.
@@ -184,7 +221,7 @@ I use other programs too like e.g. Spotify, HashTab, VT Hash Check, Git, ScreenT
 
 ### Real-time Web & Malware Protection
 
-- Windows Defender in EMET Mode [_that's how I call it it's not an official term!_]
+- Windows Defender in [EMET Mode](https://blogs.technet.microsoft.com/srd/2016/11/03/beyond-emet/) [_that's how I call it it's not an official term!_]
 - OSArmor (less [clusterfuck](https://www.urbandictionary.com/define.php?term=clusterfuck) compared to AppShield/AppGuard)
 - Windows own Firewall (no GUI tool like WFC but you could use it it's freeware).
 - [Hard_Configurator](https://github.com/AndyFul/Hard_Configurator) (_sometimes I use it sometimes not, yep it's weird!_)
@@ -195,16 +232,35 @@ I use other programs too like e.g. Spotify, HashTab, VT Hash Check, Git, ScreenT
 
 * Pretty much maxed out. **EMET Mode** means I disabled the Antivirus & Network Inspection part. I monitor registry startup entries Hard Configuration to enforce a basic user deny execution and protect registry startup entries.
 * I sometime use [ConfigureDefender](https://github.com/AndyFul/ConfigureDefender) because it's the "better GUI" for WD to easier change some settings.
-* Protected folders enabled and some custom WD-exploit protection are enabled. I only allowing vulnerable Microsoft software such as Outlook or MS Edge (Chromium) to load signed Microsoft DLL's. 
+* Protected folders enabled and some custom WD-exploit protection are enabled. I only allowing vulnerable Microsoft software such as Outlook or MS Edge (Chromium) to load signed Microsoft DLL's.
 
 
-**OSArmor**
+**OSArmor (OSA)**
+
+[OSArmor by NoVirusThanks](https://www.novirusthanks.org/products/osarmor/) is a typically behavior blocker (often called "Anti-Executable") product which is really good because it's freeware and the configuration is more or less easy for beginners & experts. However, these products normally do not protect you against [memory based attacks](https://docs.microsoft.com/en-us/windows/desktop/memory/memory-protection), so keep this in mind. [Windows itself has several function which developers could use](https://en.wikipedia.org/wiki/Memory_protection) but the sad truth is that most developers never design their applications to be secure (because this it requires a lot of effort & more tests).
+
+Same like all behavior blocker you might run into false positives (depending how strong you configured it). I usually review these warnings and add them as exclusions in my configuration.
+
+
+__Settings__
 
 I harden attacks against CMD & PowerShell, with a `DEFAULT DENY custom rule` to block all software from user space when it's NOT SIGNED BY TRUSTED vendors. As an extra security layer on top of SRP basic user and UAC block unsigned and limit Outlook to only start Edge/Brave, Word, Powerpoint, Excel and limit Edge/Brave to launch only WD and itself.
 
 I theoretically would say, go with MS own AppGuard but a) it's not available for Home/Pro users b) MS never fixed the known holes c) it's clusterfuck.
 
 There are alternatives like MalwareBytes Anti-Exploit and whatnot but OS Armor is free, was its first of it's kind and provides useful functions which I consider as _cool_.
+
+
+__Updates & Problems__
+
+To install or update it, first uninstall the previous build, then reboot (not really needed but may help to avoid some problems) and install the new build.
+
+In the wrong hands OSArmor can under specific circumstances crash the entire Explorer.exe which makes your Windows _almost unusable_. In this case (wrong configuration) open ProcessHacker (as admin) and try to run `services.msc` & stop the `NoVirusThanks OSArmorDevSvc` process (disabling is enough, kill the process and all sub-processes, restart).
+
+
+**NoVirusThanks EXE Radar Pro (NVT ERP)**
+
+[NVT ERP](https://www.novirusthanks.org/products/exe-radar-pro/) is in general stronger compared to OSA but requires more interaction (it is definitely not for beginners [It is also not free]). Keep in mind that the program itself is not documented which makes it even harder to understand / use the program. However, the current beta is free and can be tested over [here](https://malwaretips.com/threads/exe-radar-pro-v4-beta.80310/), the principle is exactly the same like OSA except that NVT ERP offers more functions.
 
 
 **SysHardener**
@@ -217,14 +273,20 @@ User-Account-Control (UAC) is set to only elevate executable which are `signed a
 It's set to default, a `(DENY)` rule. You get the warning `This app has been blocked by your system administrator.` when the app is not explicitly allowed.
 
 
+**WD's folder access**
+
+SmartScreen usually takes care of whitelisted programs which can get access to specific controllers to e.g. avoid ransomware, since I do not want/like SmartScreen I use a tweaked OSA settings (see below) and allow only program execution in a user space of my whitelisted vendors list. This makes the controlled Folder Access feature in WD redundant. In theory a local specific OSA whitelist is much more restrictive than cloud based whitelist of controlled folder access.
+
+
+
 **NTFS Access Control Lists**
 
 All Startup, Public locations, Shared files/folders (Documents, Mail, Music, Pictures, Videos) are restricted via `DENY "Traverse Folder/Execute file" for EVERYONE`. This means when you click an unknown executable which spools .dll files from another folder you see `Windows can not access the specified device, path or file. You may not have the appropriate permissions to access the item`.
 
 
-### Group Policy to manage Software Restriction 
+### Group Policy to manage Software Restriction
 
-Since I only use Windows Defender in an "EMET Mode" (which means I disabled the real-time AV + Network inspection) my entire defense relies on software restrictions. However I work a lot with GPOs. 
+Since I only use Windows Defender in an "EMET Mode" (which means I disabled the real-time AV + Network inspection) my entire defense relies on software restrictions. However I work a lot with GPOs.
 
 I believe that restricting & controlling is normally enough. For this purpose I use:
 
@@ -241,7 +303,7 @@ There are several drawbacks which is the reason why I never finished/released my
 - Testing is somewhat required to ensure that those toggles are really applied. Well, I would say that applies to every software/script/tool too but I mention it anyway.
 
 
-## Unknown Apps/Software 
+## Unknown Apps/Software
 
 I use Sandboxie which allows me to test software freely. This basically prevents 99% of all malware. You can also use it as a firewall (by restricting internet access). It is a very powerful utility and requires a lot of configuration, I think that's the reason why it never got "mainstream". I think the price is more than fair for such an product (_my opinion_).
 
@@ -272,7 +334,7 @@ Soon.
 
 ### Malware Testing
 
-I do test malware when I have some free time, I typically use VMWare Pro & Sandboxie for this purpose. Both programs are not freeware or open source but I believe that I can trust them. 
+I do test malware when I have some free time, I typically use VMWare Pro & Sandboxie for this. Both programs are not freeware or open source but I believe that I can trust them.
 
 
 ## Encryption
@@ -284,10 +346,10 @@ Keep in mind that whenever you use FDE you might need to remove/disable it durin
 
 ### Other tools
 
-Do I need other tools like [O&O shit'sup](https://www.oo-software.com/en/shutup10), [HardenTools](https://github.com/securitywithoutborders/hardentools) [_-insert 5000 other well-known tools here-_]? 
+Do I need other tools like [O&O shit'sup](https://www.oo-software.com/en/shutup10), [HardenTools](https://github.com/securitywithoutborders/hardentools) [_-insert 5000 other well-known tools here-_]?
 
 The answer is **NO**, if you have done everything correctly you do not need them because due to the fact that we:
-- Already integrated the registry tweaks & stuff via NTLite/MSGM ToolKit 
+- Already integrated the registry tweaks & stuff via NTLite/MSGM ToolKit
 - Used GPO's to control Windows "features" & settings
 - The firewall takes care of the rest (aka out-(incoming traffic)
 
@@ -305,7 +367,7 @@ The all mighty question is shall I fresh install or upgrade (in-place upgrade)? 
  Scenario  | In-Place | Fresh | Comment |
 | ------------- | ------------- | ------------- | ------------- |
 | Upgrading from Windows 7/8/8.1  |   | X | //
-| Build upgrades from e.g. 1809 to 190  | X | | Choose "Keep all my files"
+| Build upgrades from e.g. 1809 to 190 | X | | Choose "Keep all my files"
 | Malware infection (which can't be removed) |  X | | Choose "Keep all my files"
 | Other corruptions which are not be able to fix via SFC/DISM | X | | Choose "Keep all my files"
 
@@ -315,18 +377,26 @@ Keep in mind that whenever you in-place upgrade Windows that it "resets" several
 
 ## Bypassing all of this
 
-Theoretically you still can be fooled by malicious us programs, however since we ensure that only programs with valid signatures can be executed we reduce the attack surface by around 90%. The rest of attack scenarios are pretty common and can fool everyone like social engineering. There is nothing much you can do here, except reading & keeping yourself updated. 
+Theoretically you still can be fooled by malicious programs, however since we ensure that only programs with valid signatures can be executed we reduce the attack surface by around 90%. The rest of attack scenarios are pretty common and can fool everyone like social engineering. There is nothing much you can do here, except reading & keeping yourself updated.
 
-Physical access is another thing which this guide can't cover, whenever an attacker has access we simply don't can't speak about security anymore. 
+Physical access is another thing which this guide can't cover, whenever an attacker has access we simply don't can't speak about security anymore.
+
+
+### Testing
+
+Testing is maybe the most important part of this guide because you can not verify anything without proofing it first. Measuring the overall Windows 10 security is complicated because there are many factors which you have to consider.
+
+
 
 
 ### Guide Updates
 
 This guide will constantly receive updates. Because I'm never satisfied & Windows 10 + my own preferences might change over the time.
 
-Last updated: 
-* - `15.09.2019` - 
+
+Last updated:
+* `15.09.2019`
 
 
 Status:
-* - `ALPHA 1 (draft)` - 
+* `ALPHA 1 (draft)`

@@ -1,0 +1,18 @@
+Setting	State	Comment
+Do not allow the BITS client to use Windows Branch Cache	Not configured	No
+Do not allow the computer to act as a BITS Peercaching client	Not configured	No
+Do not allow the computer to act as a BITS Peercaching server	Not configured	No
+Allow BITS Peercaching	Not configured	No
+Timeout for inactive BITS jobs	Not configured	No
+Limit the maximum network bandwidth for BITS background transfers	Not configured	No
+Limit the maximum network bandwidth used for Peercaching	Not configured	No
+Set up a maintenance schedule to limit the maximum network bandwidth used for BITS background transfers	Not configured	No
+Set up a work schedule to limit the maximum network bandwidth used for BITS background transfers	Not configured	No
+Limit the BITS Peercache size	Not configured	No
+Limit the age of files in the BITS Peercache	Not configured	No
+Limit the maximum BITS job download time	Not configured	No
+Limit the maximum number of files allowed in a BITS job	Not configured	No
+Limit the maximum number of BITS jobs for this computer	Not configured	No
+Limit the maximum number of BITS jobs for each user	Not configured	No
+Limit the maximum number of ranges that can be added to the file in a BITS job	Not configured	No
+Set default download behavior for BITS jobs on costed networks	Not configured	No
