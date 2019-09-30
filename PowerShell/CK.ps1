@@ -1,53 +1,55 @@
-<# 
-                                                                                                                                                                                        
-_|          _|  _|                  _|    _|        _|    _|                            _|                      _|                          _|                        _|_|_|  _|    _|  
-_|          _|      _|_|_|        _|_|  _|  _|      _|    _|    _|_|_|  _|  _|_|    _|_|_|    _|_|    _|_|_|        _|_|_|      _|_|_|      _|_|_|    _|    _|      _|        _|  _|    
-_|    _|    _|  _|  _|    _|        _|  _|  _|      _|_|_|_|  _|    _|  _|_|      _|    _|  _|_|_|_|  _|    _|  _|  _|    _|  _|    _|      _|    _|  _|    _|      _|        _|_|      
-  _|  _|  _|    _|  _|    _|        _|  _|  _|      _|    _|  _|    _|  _|        _|    _|  _|        _|    _|  _|  _|    _|  _|    _|      _|    _|  _|    _|      _|        _|  _|    
-    _|  _|      _|  _|    _|        _|    _|        _|    _|    _|_|_|  _|          _|_|_|    _|_|_|  _|    _|  _|  _|    _|    _|_|_|      _|_|_|      _|_|_|        _|_|_|  _|    _|  
-                                                                                                                                    _|                      _|                          
-                                                                                                                                _|_|                    _|_|                            
+<#
+
+_|          _|  _|                  _|    _|        _|    _|                            _|                      _|                          _|                        _|_|_|  _|    _|
+_|          _|      _|_|_|        _|_|  _|  _|      _|    _|    _|_|_|  _|  _|_|    _|_|_|    _|_|    _|_|_|        _|_|_|      _|_|_|      _|_|_|    _|    _|      _|        _|  _|
+_|    _|    _|  _|  _|    _|        _|  _|  _|      _|_|_|_|  _|    _|  _|_|      _|    _|  _|_|_|_|  _|    _|  _|  _|    _|  _|    _|      _|    _|  _|    _|      _|        _|_|
+  _|  _|  _|    _|  _|    _|        _|  _|  _|      _|    _|  _|    _|  _|        _|    _|  _|        _|    _|  _|  _|    _|  _|    _|      _|    _|  _|    _|      _|        _|  _|
+    _|  _|      _|  _|    _|        _|    _|        _|    _|    _|_|_|  _|          _|_|_|    _|_|_|  _|    _|  _|  _|    _|    _|_|_|      _|_|_|      _|_|_|        _|_|_|  _|    _|
+                                                                                                                                    _|                      _|
+                                                                                                                                _|_|                    _|_|
 
         Codename : Waste of time
         Author   : CHEF-KOCH
         License  : GNU General Public License v3.0
-        Version  : 0.1 (public version) ALPHA
+        Version  : 0.2 (public version) ALPHA
 
 #>
 
 
-<#    
-       .SYNOPSIS		
-	                            - Windows 10 hardening & setup -
-			
+<#
+       .SYNOPSIS
+                        - Windows 10 hardening with some extra candy -
+
        .DESCRIPTION
         This PowerShell script aims to harden & tweak Windows 10 LTSC (EntS) & Ent.
         All tweaks are explained and there will be no "undo" script or option, just do a backup!
                                 ========== DO NOT README ==========
             -> The tweaks are the ones which I (still) use (under Windows 10 EntS./Ent.)
-            -> Script integration into an ISO image is possible, however I do 
+            -> Script integration into an ISO image is possible, however I do
                 not use it because I usually apply the fixes after a fresh installation and
                 some tweaks can only be applied after the OS got installed.
             -> This script is a public version, I do not upload my privte one, because I
-                often change my mind and tweak/adjust or change several things based on 
+                often change my mind and tweak/adjust or change several things based on
                 my current needs.
             -> I do not support chinese systems, sorry - still love ya folks! However,
-                it should work since we enforce UTF 8 w/o BOM with line ending CRLF.
+                it should work since we enforce UTF-8 w/o BOM with line ending CRLF.
             -> This script has NO OS/PS checks, using it on other SKUs is own your own!
-            -> This script IS INSECURE, because it needs higher OS level rights and it 
+            -> This script IS INSECURE, because it needs higher OS level rights and it
                 will change/uninstall a lot - Again, a BACKUP is highly recommened!
             -> This script is not a "unfuck", "debloat", removal- all-in-one-, or setup script.
             -> This script is not optimized nor tested against Server based SKUs.
-            -> This script follows MS PowerShell coding standards & practices.
-            -> Optimized for PowerShell 4+ or PowerShell Core.
+			-> This script follows MS PowerShell coding standards & practices, see here:
+				https://docs.microsoft.com/en-us/powershell/scripting/?view=powershell-6
+            -> "Optimized" for PowerShell 6 or PowerShell Core.
             -> The script is avbl. as Chocolatey package (but not yet uploaded).
-            -> There are some quirks, some settings are been uninstalled but still been 
-                set up, this is on purpose because you can easily comment them out in 
-                caase you like to keep product/function X.
+            -> There are some quirks, some settings are been uninstalled but still been
+                set up, this is on purpose because you can easily comment them out in
+				caase you like to keep product/function X.
+			-> Provided AS IS without warranty of any kind.
                                 ========== DO NOT README ==========
 
        .LINK
-           http://github.com
+           https://github.com/CHEF-KOCH/Windows-10-hardening/blob/master/PowerShell/CK.ps1
 #>
 
 
@@ -59,17 +61,31 @@ Clear-Host
 $Error.Clear()
 # Enforce UTF-8 without BOM
 $OutputEncoding = [System.Console]::OutputEncoding = [System.Console]::InputEncoding = [System.Text.Encoding]::UTF8
-# 
-# <Add missing variables here>
-# 
+#
+# Missing Variables
+# (fixme) New-Variable -Name
+#
+# Execution
+# Set-ExecutionPolicy Unrestricted
+# ls -Recurse *.ps1 | Unblock-File
+# ls -Recurse *.psm1 | Unblock-File
+#
+# Aditional workaround for gaining root in registry
+# Todo:
+#
 ##########################################################################################
-######      Telemetry & Feedback, Ads & Fingerprinting Migration
+######      	Telemetry & Feedback, Ads & Fingerprinting Migration				######
 # Overview: https://docs.microsoft.com/en-us/windows/privacy/manage-windows-1809-endpoints
-# https://files.catbox.moe/ugqngv.pdf
+# German "audit" 						https://files.catbox.moe/ugqngv.pdf (bullshit)
 # Windows Editions Diff:                https://en.wikipedia.org/wiki/Windows_10_editions
 ##########################################################################################
+# Turn off telemetry for Service Provider Foundation
+# https://docs.microsoft.com/en-us/powershell/module/spfadmin/set-scspftelemetry?view=systemcenter-ps-2019
+Set-SCSPFTelemetry -Enabled $False
+# Prevent non-administrators from using Safe Mode
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "SafeModeBlockNonAdmins" -PropertyType DWord -Value 1 -Force
 # Turn off Turn Help Experience Improvement Program
-New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Assistance\Client\1.0" -Name "NoImplicitFeedback" -PropertyType DWord -Value 0 -Force
+New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" -Name "NoImplicitFeedback" -PropertyType DWord -Value 0 -Force
 # Turn off App based Customer Experience Improvement Program (CEIP)
 New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\AppV\CEIP" -Name "CEIPEnable" -PropertyType DWord -Value 0 -Force
 # Turn off WMP Telemetry (meta data)
@@ -107,7 +123,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentD
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338393Enabled" -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -PropertyType DWord -Value 0 -Force
-# Turn off "File Explorer ads" (Pro users only)
+# Turn off "File Explorer ads" (Home/Pro users only!)
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -Type DWord -Value 0
 # Turn off handwriting personalization data sharing
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\TabletPC" -Name "PreventHandwritingDataSharing" -PropertyType DWord -Value 1 -Force
@@ -145,8 +161,14 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy"
 # Turn off Find my device
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Settings\FindMyDevice" -Name "LocationSyncEnabled" -PropertyType DWord -Value 0 -Force
 ##########################################################
-######   Explorer.exe
+######   				Explorer.exe				######
 ##########################################################
+# Turn off Jump Lists
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableXamlJumpView" -Type DWord -Value 1 -Force
+# Turn off Xaml
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableXamlStartMenu" -Type DWord -Value 0
+# Turn off Experimental Login Screen
+#Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\TestHooks" -Name "Threshold" -Type DWord -Value 1 -Force
 # Turn off "People Bar" in Explorer (not needed since 1603+)
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HidePeopleBar" -Type DWord -Value 1
 # Hide "Remove Hardware and Eject Media" Button until next reboot
@@ -276,7 +298,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 # Turn on recycle bin files delete confirmation
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "ConfirmFileDelete" -PropertyType DWord -Value 1 -Force
 ##########################################################
-###### Hibernation & Energy
+###### 				Hibernation & Energy			######
 ##########################################################
 # Turn off Hibernation
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernateEnabled" -Type DWord -Value 0
@@ -300,8 +322,10 @@ IF ((Get-CimInstance -ClassName Win32_ComputerSystem).PCSystemType -eq 1)
 	$adapter | Set-NetAdapterPowerManagement
 }
 ##########################################################
-###### Context Menu
+###### 					Context Menu 				######
 ##########################################################
+# Add "Run as Administrator" context menu for .ps1 files
+New-Item -Path "Registry::HKEY_CLASSES_ROOT\Microsoft.PowershellScript.1\Shell\runas\command" -Force -Name '' -Value '"c:\windows\system32\windowspowershell\v1.0\powershell.exe" -noexit -file "%1"'
 # Turn on Photo Viewer 'Open with...'
 If (!(Test-Path "HKCR:")) {
     New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
@@ -311,7 +335,6 @@ New-Item -Path "HKCR:\Applications\photoviewer.dll\shell\open\DropTarget" -Force
 Set-ItemProperty -Path "HKCR:\Applications\photoviewer.dll\shell\open" -Name "MuiVerb" -Type String -Value "@photoviewer.dll,-3043"
 Set-ItemProperty -Path "HKCR:\Applications\photoviewer.dll\shell\open\command" -Name "(Default)" -Type ExpandString -Value "%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1"
 Set-ItemProperty -Path "HKCR:\Applications\photoviewer.dll\shell\open\DropTarget" -Name "Clsid" -Type String -Value "{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A}"
-}
 # Remove "Edit with Photos" from context menu
 New-ItemProperty -Path "HKCU:\HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellEdit" -Name "ProgrammaticAccessOnly" -PropertyType String -Value "" -Force
 # Remove "Create a new video" from Context Menu
@@ -368,12 +391,14 @@ New-ItemProperty -Path "HKCU:\HKEY_CLASSES_ROOT\CABFolder\Shell\RunAs\Command" -
 New-ItemProperty -Path "HKCU:\HKEY_CLASSES_ROOT\CABFolder\Shell\RunAs" -Name "MUIVerb" -PropertyType String -Value "@shell32.dll,-10210" -Force
 New-ItemProperty -Path "HKCU:\HKEY_CLASSES_ROOT\CABFolder\Shell\RunAs" -Name "HasLUAShield" -PropertyType String -Value "" -Force
 ##########################################################
-######  Printer
+######  				Printer						######
 ##########################################################
 # Do not allow Windows 10 to manage default printer
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" -Name "LegacyDefaultPrinterMode" -PropertyType DWord -Value 1 -Force
+
+
 ##########################################################
-######  User Accounts
+######  			User Accounts					######
 ##########################################################
 # Turn on 'Users can't add or log on with Microsoft accounts'
 # 0000000 = This policy is disabled
@@ -383,7 +408,7 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 # Allow Microsoft accounts to be optional <-> 'Disabled'
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "MSAOptional" -PropertyType DWord -Value 1 -Force
 ##########################################################
-######                  Apps
+######                  Apps                        ######
 ##########################################################
 # Turn off Connect Now Wizard (not in LTSB/LTSC and 1603+)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WCN\Registrars" -Name "DisableFlashConfigRegistrar" -Type DWord -Value 0 -Force
@@ -475,8 +500,8 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" 
 # (fixme) Add XBOX 360 driver workaround (1909 fixed? - needs more tests)
 Get-AppxPackage -AllUsers | where-object {$_.name –notlike "*store*"} | Remove-AppxPackage
 ##########################################################
-######              Start Menu 
-#               I use StartisBack++ 
+######              Start Menu                      ######
+#               I use StartisBack++
 ##########################################################
 # Turn off Sleep & keyboard button in Start Menu
 #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowSleepOption" -Type DWord -Value 0
@@ -494,7 +519,7 @@ $bytes[0x15] = $bytes[0x15] -bor 0x20
 Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\System Tools\Command Prompt.lnk" -Value $bytes -Encoding Byte -Force
 # Turn off recently added apps on Start Menu
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HideRecentlyAddedApps" -Type DWord -Value 1
-# Turn off 'Most used' apps list from the Start Menu 
+# Turn off 'Most used' apps list from the Start Menu
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMFUprogramsList" -Type DWord -Value 1
 # Turn off app suggestions on Start menu e.g. Windows Ink Workspace
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -PropertyType DWord -Value 0 -Force
@@ -518,7 +543,7 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Type DWord -Value 2
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarGlomLevel" -Type DWord -Value 2
 ##########################################################
-######      Microsoft Edge (old non Chomium)
+######      Microsoft Edge (old non Chomium)        ######
 ##########################################################
 # Uninstall Microsoft Edge
 # Not possible anymore since 1709+, it will be replaced with Chromium Edge anyway (in 20H1?)
@@ -561,16 +586,16 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 # Hide notification about disabled Smartscreen for Microsoft Edge
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name "AppAndBrowser_EdgeSmartScreenOff" -PropertyType DWord -Value 0 -Force
 ##########################################################
-######          Storage Sense 1703+
+######          Storage Sense 1703+                 ######
 ##########################################################
 # Turn off scheduled defragmentation task
 Disable-ScheduledTask -TaskName "Microsoft\Windows\Defrag\ScheduledDefrag" | Out-Null
 # Turn on Storage Sense to automatically free up space
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name 01 -PropertyType DWord -Value 1 -Force
-# Run Storage Sense every month | Otherwise use CCleaner incl. Winapp2.ini which is the alternative to Storage Sense. 
+# Run Storage Sense every month | Otherwise use CCleaner incl. Winapp2.ini which is the alternative to Storage Sense.
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name 2048 -PropertyType DWord -Value 30 -Force
 ##########################################################
-######              SmartScreen
+######              SmartScreen                     ######
 ##########################################################
 # Turn off SmartScreen for apps and files
 # Block = Block execution/opening (Secure)
@@ -587,8 +612,10 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Classes\Local Settings\SOFTWARE\Microsoft
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "PreventOverride" -PropertyType DWord -Value 1 -Force
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "PreventOverrideAppRepUnknown" -PropertyType DWord -Value 1 -Force
 ##########################################################
-###### 			Windows Defender (WD)
+###### 			    Windows Defender (WD)           ######
 ##########################################################
+# Turn off MRT Telemetry
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\MRT" -Name "DontReportInfectionInformation" -Value 1 -Force
 # Turn on protection against Potentially Unwanted Applications
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\MpEngine" -Name "MpEnablePus" -PropertyType DWord -Value 1 -Force
 # Turn off driver scanning
@@ -641,7 +668,7 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spyne
 # Turn on blocking of downloaded files
 #Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "SaveZoneInformation" -Type DWord -Value 1
 Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "SaveZoneInformation" -ErrorAction SilentlyContinue
-# Turn on Windows Defender Account Protection Warnings 
+# Turn on Windows Defender Account Protection Warnings
 Remove-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name "AccountProtection_MicrosoftAccount_Disconnected" -ErrorAction SilentlyContinue
 # Turn off Account Protection Notifications
 Set-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name "AccountProtection_MicrosoftAccount_Disconnected" -Type DWord -Value 1
@@ -664,11 +691,11 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spyne
 # Turn on "Windows Defender Exploit Guard Network Protection"
 Set-MpPreference -EnableNetworkProtection Enabled
 # Turn on Windows Defender Sandbox
-setx /M MP_FORCE_USE_SANDBOX 1
+setx /M MP_FORCE_USE_SANDBOX=1
 # Turn on "Windows Defender PUA Protection"
 Set-MpPreference -PUAProtection Enabled
 # Turn off WD "Firewall & Network protection"
-# I use my Router & AdGuard Home as shield 
+# I use my Router & AdGuard Home as shield
 #Set-NetFirewallProfile -Enabled false
 # Turn on Windows Defender Exploit Protection Settings
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\App and Browser protection" -Name "DisallowExploitProtectionOverride" -ErrorAction SilentlyContinue
@@ -681,7 +708,7 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Repor
 # Turn on "Block at first seen"
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Name "DisableBlockAtFirstSeen" -PropertyType DWord -Value 0 -Force
 ##########################################################
-######                      Taskbar
+######                      Taskbar                 ######
 ##########################################################
 # Turn on all tray icons
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoAutoTrayNotify" -Type DWord -Value 1
@@ -698,7 +725,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PenWorks
 # Turn on acrylic taskbar transparency
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "UseOLEDTaskbarTransparency" -PropertyType DWord -Value 1 -Force
 ##########################################################
-######                      BSOD
+######                      BSOD                    ######
 ##########################################################
 # Turn off Startup and Recovery - Debug Information
 # Defaults 1,1,5,1,1,1
@@ -709,7 +736,7 @@ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Na
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "CrashDumpEnabled" -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "AlwaysKeepMemoryDump" -PropertyType DWord -Value 0 -Force
 ##########################################################
-######                      Sync
+######                      Sync                    ######
 ##########################################################
 # Turn off app based sync
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging" -Name "AllowMessageSync" -PropertyType DWord -Value 0 -Force
@@ -748,8 +775,10 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SettingS
 # Turn off Sync your settings: Other Windows settings
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Windows" -Name "Enabled" -PropertyType DWord -Value 0 -Force
 ###############################################
-######              Privacy 
+######              Privacy              ######
 ###############################################
+# Manage single or multiple sessions per user (RDP) - Prevent multiple sessions at once
+#New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fSingleSessionPerUser" -PropertyType DWord -Value 1 -Force
 # Strict DLL search order
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "CWDIllegalInDllSearch" -PropertyType DWord -Value 0 -Force
 # Turn off WMDRM
@@ -793,14 +822,9 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error 
 # Turn off Microsoft Account user authentication
 New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\MicrosoftAccount" -Name "DisableUserAuth" -PropertyType DWord -Value 1 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "NoConnectedUser" -PropertyType DWord -Value 3 -Force
-# Turn off Task Manager details (I use Process Hacker)
-$preferences = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue
-If ($preferences) {
-	$preferences.Preferences[28] = 1
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -Type Binary -Value $preferences.Preferences
 # Turn off Network Connectivity Status Indicator active test (possible data leakage)
 # Info:
-# msftconnecttest.com + ipv6.msftconnecttest.com 
+# msftconnecttest.com + ipv6.msftconnecttest.com
 # dns.msftncsi.com looking + 131.107.255.255
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkConnectivityStatusIndicator" -Name "NoActiveProbe" -Type DWord -Value 1
 # Turn on cleaning of recent used files
@@ -826,7 +850,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" 
 reg add  "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules"  /v "{60E6D465-398E-4850-BE86-7EF7620A2377}" /t REG_SZ /d  "v2.24|Action=Block|Active=TRUE|Dir=Out|App=C:\windows\system32\svchost.exe|Svc=DiagTrack|Name=Windows  Telemetry|" /f
 reg add  "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules"  /v "{2765E0F4-2918-4A46-B9C9-43CDD8FCBA2B}" /t REG_SZ /d  "v2.24|Action=Block|Active=TRUE|Dir=Out|App=C:\windows\systemapps\microsoft.windows.cortana_cw5n1h2txyewy\searchui.exe|Name=Search  and Cortana  application|AppPkgId=S-1-15-2-1861897761-1695161497-2927542615-642690995-327840285-2659745135-2630312742|"  /f
 ##########################################################
-######      Internet Explorer (ignore the warnings)
+######      Internet Explorer (Ignore the warnings) ######
 ##########################################################
 # Uninstall Internet Explorer
 # WARNING: Don't remove other IE related packages otherwise you will lose the internet settings in your control panel!
@@ -845,7 +869,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\SearchSc
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\SearchScopes" -Name "ShowSearchSuggestionsGlobal" -Type DWord -Value 1
 # Turn on HTTP/2 in Internet Explorer
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "EnableHTTP2" -Type DWord -Value 1
-# Turn off SSLv3 & suppress certificate errors in Internet Explorer 
+# Turn off SSLv3 & suppress certificate errors in Internet Explorer
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "CallLegacyWCMPolicies" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "EnableSSL3Fallback" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "PreventIgnoreCertErrors" -Type DWord -Value 1
@@ -892,15 +916,52 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer" -Na
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Addons" -Name "FlashPlayerEnabled" -Type DWord -Value 0
 ###############################################
-###### 				Security 
+###### 				Security             ######
 ###############################################
+# CredSSP Patch Causing RDP Authentication Error due to Encryption Oracle Remediation
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\CredSSP" -Name "AllowEncryptionOracle" -Type DWord -Value 2 -Force
+# Delete Pagefile.sys at Shutdown
+Set-ItemProperty -Path "HKLM:\SYSTEM\Current\ControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutDown" -Type DWord -Value 1 -Force
+<# Server
+# https://support.microsoft.com/en-us/help/3000483/ms15-011-vulnerability-in-group-policy-could-allow-remote-code-execution
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths" -Name "RequireMutualAuthentication" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths" -Name "RequireIntegrity" -Type DWord -Value 1
+# https://support.microsoft.com/en-us/help/3116180/ms15-124-cumulative-security-update-for-internet-explorer-december-8-2
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\InternetExplorer\Main\FeatureControl" -Name "FEATURE_ALLOW_USER32_EXCEPTION_HANDLER_HARDENING" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\InternetExplorer\Main\FeatureControl" -Name "FEATURE_ALLOW_USER32_EXCEPTION_HANDLER_HARDENING" -Type DWord -Value 1
+# https://support.microsoft.com/en-us/help/3140245/update-to-enable-tls-1-1-and-tls-1-2-as-default-secure-protocols-in-wi
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\InternetExplorer\Main\FeatureControl" -Name "FEATURE_ALLOW_USER32_EXCEPTION_HANDLER_HARDENING" -Type DWord -Value 1
+
+# Server only - Clear plain-text passwords from WDigest memory
+# https://docs.microsoft.com/en-us/security-updates/SecurityAdvisories/2016/2871997
+# https://support.microsoft.com/kb/2871997
+#Remove-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Type DWord -Value 0 -Force
+
+# Server only - Block unsafe ticket-granting (fixme)
+# https://portal.msrc.microsoft.com/en-us/security-guidance/advisory/ADV190006
+# https://support.microsoft.com/en-us/help/4490425/updates-to-tgt-delegation-across-incoming-trusts-in-windows-server
+# netdom.exe trust fabrikam.com /domain:contoso.com /EnableTGTDelegation:No | Out-Null
+
+#>
+# Turn off Adobe Reader DC Protected Mode (I use SumatraPDF instead)
+#New-ItemProperty -Path "HKCU:\SOFTWARE\Adobe\Acrobat Reader\DC\Privileged" -Name "bProtectedMode" -PropertyType DWord -Value 1
+#New-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown" -Name "bProtectedMode" -PropertyType DWord -Value 1
+# Turn off Adobe JavaScript
+# https://www.adobe.com/devnet-docs/acrobatetk/tools/AppSec/sandboxprotections.html
+# http://www.adobe.com/support/security/advisories/apsa09-07.html
+#New-ItemProperty -Path "HKCU:\Software\Adobe\Acrobat Reader\9.0\JSPrefs" -Name "bEnableJS" -PropertyType DWord -Value 0
+#New-ItemProperty -Path "HKCU:\Software\Adobe\Acrobat Reader\9.0\JSPrefs" -Name "bEnableConsoleOpen" -PropertyType DWord -Value 0
+#New-ItemProperty -Path "HKCU:\Software\Adobe\Acrobat Reader\9.0\JSPrefs" -Name "benableMenuItems" -PropertyType DWord -Value 0
+
+
+
 # Turn off WPD (not needed in 1909+ wpad js engine runs isolated)
 # https://twitter.com/epakskape/status/1007316208087994368
 # https://docs.microsoft.com/en-us/azure/active-directory/devices/hybrid-azuread-join-manual-steps + KB3165191 (MS16-077)
 # AdGuard Home
 #0.0.0.0 wpad wpad.my.home
 #:: wpad wpad.my.home
-# Win HOSTS
+# Win WPAD HOSTS
 #0.0.0.0 wpad
 #0.0.0.0 wpad.my.home
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\services\WinHttpAutoProxySvc" -Name "Start" -Type DWord -Value 4 -Force
@@ -938,11 +999,8 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\Sta
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0
 # Enable network profile -> public (disables file sharing, device discovery, and more...)
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures\010103000F0000F0010000000F0000F0C967A3643C3AD745950DA7859209176EF5B87C875FA20DF21951640E807D7C24" -Name "Category" -ErrorAction SilentlyContinue
-Set-NetConnectionProfile -NetworkCategory Public
 # Set unknown networks profiles to public
-# Set UAC to high
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
+Set-NetConnectionProfile -NetworkCategory Public
 # Turn off Hotspot reports
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "value" -PropertyType DWord -Value 0 -Force
 # Disallow Autoplay for non-volume devices'
@@ -1096,13 +1154,19 @@ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Par
 # Turn off Domain Picture Passwords
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "BlockDomainPicturePassword" -PropertyType DWord -Value 1 -Force
 ##########################################################
-###### Services.msc & Misc
+###### 					Task Manager                ######
 ##########################################################
-# Turn off Windows Search indexing service, since I use Everything from VoidTools.
-Stop-Service "WSearch" -WarningAction SilentlyContinue
-Set-Service "WSearch" -StartupType Disabled
+# Turn off Task Manager details (I use Process Hacker)
+$preferences = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue
+If ($preferences) {
+	$preferences.Preferences[28] = 1
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -Type Binary -Value $preferences.Preferences
+}
 # Group svchost.exe processes
 $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+##########################################################
+###### 					.NET Framework              ######
+##########################################################
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name SvcHostSplitThresholdInKB -PropertyType DWord -Value $ram -Force
 # Enforce on .NET 4 runtime for all apps
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\.NETFramework -Name OnlyUseLatestCLR" -PropertyType DWord -Value 1 -Force
@@ -1111,30 +1175,30 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework" -Nam
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" -Name "SchUseStrongCrypto" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319" -Name "SchUseStrongCrypto" -Type DWord -Value 1
 ##########################################################
-###### 						Login
+###### 						Login                   ######
 ##########################################################
 # Turn off System Recovery and Factory reset
 reagentc /disable 2>&1 | Out-Null
 # Turn off automatic recovery mode during boot
 # bcdedit /set `{current`} BootStatusPolicy IgnoreAllFailures | Out-Null
 # Turn off insecure guest logons
-New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation" -Name AllowInsecureGuestAuth -PropertyType DWord -Value 0 -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation" -Name "AllowInsecureGuestAuth" -PropertyType DWord -Value 0 -Force
 # Turn on F8 boot menu options
-bcdedit /set `{current`} BootMenuPolicy Legacy | Out-Null
+#bcdedit /set `{current`} BootMenuPolicy Legacy | Out-Null
 # Turn off user first sign-in animation
-New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name EnableFirstLogonAnimation -PropertyType DWord -Value 0 -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableFirstLogonAnimation" -PropertyType DWord -Value 0 -Force
 # Wait for network at computer startup and logon
-New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name SyncForegroundPolicy -PropertyType DWord -Value 1 -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "SyncForegroundPolicy" -PropertyType DWord -Value 1 -Force
 ##########################################################
-###### 				Notification Center
+###### 				Notification Center             ######
 ##########################################################
 # Turn off "New App Installed" notification
-New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Name NoNewAppAlert" -PropertyType DWord -Value 1 -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "NoNewAppAlert" -PropertyType DWord -Value 1 -Force
 # Hide notification about sign in with Microsoft under Windows Security
-New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name AccountProtection_MicrosoftAccount_Disconnected -PropertyType DWord -Value 1 -Force
+New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name "AccountProtection_MicrosoftAccount_Disconnected" -PropertyType DWord -Value 1 -Force
 ##########################################################
-###### 						Backup
-######					(Macrium Reflect)
+###### 						Backup                  ######
+######					(Macrium Reflect)           ######
 ##########################################################
 # Enable System Restore
 #Enable-ComputerRestore -Drive $env:SystemDrive
@@ -1143,10 +1207,19 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" 
 #Get-Service -Name swprv, vss | Start-Service
 #Get-CimInstance -ClassName Win32_ShadowCopy | Remove-CimInstance
 # Turn on automatic backups of registry to `\System32\config\RegBack` folder
-New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager" -Name EnablePeriodicBackup -PropertyType DWord -Value 1 -Force
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager" -Name "EnablePeriodicBackup" -PropertyType DWord -Value 1 -Force
 ##########################################################
-###### 					Windows Features
+###### 					Windows Features            ######
 ##########################################################
+# Turn off Battery Fly-out UI
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell" -Name "UseWin32BatteryFlyout " -PropertyType DWord -Value 1 -Force
+# Turn off Network Fly-out UI
+# 0 = Default fly-out
+# 1 = Opens Network Settings window
+# 2 = Windows 8/8.1 style sidebar
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Control Panel\Settings\Network" -Name "ReplaceVan" -PropertyType DWord -Value 2 -Force
+# Turn off New Volume Control
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\MTCUVC" -Name "EnableMtcUvc" -PropertyType DWord -Value 0 -Force
 # Turn off Touchpad Sensitivity
 # 0 = Most sensitive
 # 1 = High sensitivity
@@ -1232,7 +1305,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\GameBar" -Name ShowStartupPanel
 # Uninstall Default Fax Printer Service
 Remove-Printer -Name "Fax" -ErrorAction SilentlyContinue
 ##########################################################
-###### 					MS One Drive
+###### 					MS One Drive                ######
 ##########################################################
 Stop-Process -Name OneDrive -Force -ErrorAction SilentlyContinue
 Start-Process -FilePath "$env:SystemRoot\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait
@@ -1258,9 +1331,9 @@ else
 Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$env:ProgramData\Microsoft OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
 Unregister-ScheduledTask -TaskName *OneDrive* -Confirm:$false
-#############################
-###### Sound
-#############################
+##########################################################
+###### 						Sound                   ######
+##########################################################
 # Turn off sound scheme
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoChangingSoundScheme" -Type DWord -Value 1
 # Turn off Windows Startup sound
@@ -1280,15 +1353,22 @@ $SoundScheme = ".None"
 	}
 Set-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name "(Default)" -Type String -Value $SoundScheme
 ##########################################################
-###### 						Mouse
+###### 						Mouse                   ######
 ##########################################################
 # Turn on enhanced mouse pointer precision
 #Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 1
 #Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 6
 #Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 10
 ##########################################################
-###### 					Windows Updates 
+###### 					Windows Updates             ######
 ##########################################################
+# Turn off all Windows Updates (forever)
+#Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "SetDisableUXWUAccess" -Type DWord -Value 1 -Force
+#Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1 -Force
+#Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Type DWord -Value 1 -Force
+#Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" -Name "DisableWindowsUpdateAccessMode" -Type DWord -Value 0 -Force
+# Turn off new Windows Update UI (I use WuMgr)
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX" -Name "IsConvergedUpdateStackEnabled" -Type DWord -Value 0 -Force
 # Turn off Windows Update deferrals (fixme)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DeferFeatureUpdates" -Type DWord -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DeferQualityUpdates" -Type DWord -Value 0 -Force
@@ -1323,15 +1403,14 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveM
 # dword:00000002 = lan only
 # dword:00000003 = lan and web
 # Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization" -Name "DODownloadMode" -ErrorAction SilentlyContinue
-Get-Service -Name DoSvc | Stop-Service -Force
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DownloadMode" -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -PropertyType DWord -Value 0 -Force
 # Turn off Windows Update automatic restart
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
-#############################
-###### Language 
-#############################
+##########################################################
+###### 					Language                    ######
+##########################################################
 # Set default Code page to UTF-8
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Nls\CodePage" -Name "ACP" -Type String -Value 65001
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Nls\CodePage" -Name "OEMCP" -Type String -Value 65001
@@ -1340,7 +1419,7 @@ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Nls\CodePage" -Na
 #REG ADD HKCU\Console\%SystemRoot^%_system32_cmd.exe /v CodePage /t REG_DWORD /d 65001
 #New-Item -ErrorAction Ignore HKCU:\Console\%SystemRoot%_system32_cmd.exe
 #Set-ItemProperty HKCU:\Console\%SystemRoot%_system32_cmd.exe CodePage 65001
-### NONO ^^ 
+### NONO ^^
 # Set the default input method to the English language
 Set-WinDefaultInputMethodOverride "0409:00000409"
 # Turn on secondary "en-US" keyboard (workaround)
@@ -1350,13 +1429,13 @@ Set-WinUserLanguageList $langs -Force
 #$langs = Get-WinUserLanguageList
 #Set-WinUserLanguageList ($langs | Where-Object {$_.LanguageTag -ne "en-US"}) -Force
 ##########################################################
-######      Performance & Cleaning + Compression
+######      Performance & Cleaning + Compression    ######
 ##########################################################
 # Changing OS Timer Resolution
 # The timer is limited by CPU not GPU.
 # Windows 10 changes timer resolution every x seconds automatically, this requires to run a script or tool in the background
 # however whenever a game/application requests a higher resolution e.g. Discord then this would make the whole utility/script useless.
-# This is a myth because 
+# This is a myth because
 # Disable memory compression
 Disable-MMAgent -mc
 # Enable-MMAgent -mc
@@ -1377,9 +1456,6 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\DWM" -Name "EnableAeroP
 fsutil behavior set DisableLastAccess 0 | Out-Null
 # Turn off Modern UI swap file (get around 256 MB extra space)
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "SwapfileControl" -Type Dword -Value 0
-# Turn off Superfetch
-Stop-Service "SysMain" -WarningAction SilentlyContinue
-Set-Service "SysMain" -StartupType Disabled
 # Remove PerfLogs
 Remove-Item $env:SystemDrive\PerfLogs -Recurse -Force -ErrorAction SilentlyContinue
 # Remove LOCALAPPDATA\Temp
@@ -1388,22 +1464,27 @@ Remove-Item $env:LOCALAPPDATA\Temp -Recurse -Force -ErrorAction SilentlyContinue
 Restart-Service -Name Spooler -Force
 Remove-Item -Path "$env:SystemRoot\Temp" -Recurse -Force -ErrorAction SilentlyContinue
 ##########################################################
-######                      Display
+######                      Display                 ######
 ##########################################################
+# Disable Windows Startup Delay (fixme) (needs investigation)
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\Current\Version\Explorer\Serialize" -Name "StartupDelayInMSec" -Type Dword -Value 0 -Force
 # Turn off display and sleep mode timeouts via powercfg
 powercfg /X monitor-timeout-ac 0
 powercfg /X monitor-timeout-dc 0
 powercfg /X standby-timeout-ac 0
 powercfg /X standby-timeout-dc 0
-# Enable per-app System DPI awareness 
+# Enable per-app System DPI awareness
 New-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "EnablePerProcessSystemDPI" -PropertyType DWord -Value 1 -Force
 # Save screenshots by pressing Win+PrtScr to the Desktop
 $value = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Desktop
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{b7bede81-df94-4682-a7d8-57a52620b86f}" -Name "RelativePath" -PropertyType String -Value $value -Force
-
 ##########################################################
-######                  Action Center
+######                  Action Center               ######
 ##########################################################
+# Turn off Action Center
+#New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Wndows\Explorer" -Name "DisableNotificationCenter" -PropertyType Dword -Value 1 -Force
+# Turn off Action Center Sidebar
+# New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell" -Name "UseActionCenterExperience " -PropertyType DWord -Value 0 -Force
 # Turn on Action Center
 Remove-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
 Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -ErrorAction SilentlyContinue
@@ -1411,7 +1492,7 @@ Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushN
 #
 #
 ##########################################################
-######                      Time
+######                      Time                    ######
 ##########################################################
 # Turn on BIOS time (UTC)
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
@@ -1428,17 +1509,20 @@ w32tm /config /syncfromflags:manual /manualpeerlist:"0.pool.ntp.org 1.pool.ntp.o
 #
 #
 #
-##########################################################
-######              DNS (example only)
-##########################################################
-#Get-NetAdapter -Physical | Set-DnsClientServerAddress -ServerAddresses 1.1.1.1,1.0.0.1,2606:4700:4700::1111,2606:4700:4700::1001
+#################################################################
+###### DNS (Cloudflare, enforce DNS via Router/PI always!) ######
+#################################################################
+# Set custom DNS on NetAdapter
+Get-NetAdapter -Physical | Set-DnsClientServerAddress -ServerAddresses 1.1.1.1,1.0.0.1,2606:4700:4700::1111,2606:4700:4700::1001
 #
 #
 #
 #
 ##########################################################
-######              Task Scheduler
+######              Task Scheduler                   #####
 ##########################################################
+# Turn off Task Scheduler migrates several security problems but is problematic to disable (fixme)
+#Set-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Schedule" -Name "Start" -Type DWord -Value 4 -Force
 # Create a task via Task Scheduler to clear the "\SoftwareDistribution\Download" folder automatically every 4 weeks (Monday).
 $action = New-ScheduledTaskAction -Execute powershell.exe -Argument @"
 	`$getservice = Get-Service -Name wuauserv
@@ -1471,37 +1555,45 @@ $params = @{
 	"Principal"	=	$principal
 }
 Register-ScheduledTask @params -Force
+
+# (fixme)
+#Get-ScheduledTask | Where-Object {$_.TaskName -match "{Telemetry, Application Experience"} | Unregister-ScheduledTask -Confirm:$false
+# Unregister every task
+# Tasks are been stored here: `C:\Windows\System32\Tasks` if you want to delete everything use `C:\Windows\System32\tasks\ {*}"`
+Get-ScheduledTask | Where-Object {$_.TaskName -match "{*"} | Unregister-ScheduledTask -Confirm:$false
+
+
 ## Disable all controversial scheduler tasks, it's enough to disable them, no need to remove them.
 # Some are not integrated or by default disabled in LTSC e.g. BthSQM, just ignore the warnings!
-schtasks /Change /TN "Microsoft\Office\Office 15 Subscription Heartbeat" /Disable
-schtasks /change /TN "Microsoft\Office\OfficeTelemetry\AgentFallBack2016" /Disable
-schtasks /Change /TN "Microsoft\Office\OfficeTelemetry\OfficeTelemetryAgentLogOn2016" /Disable
-schtasks /Change /TN "Microsoft\Office\OfficeTelemetryAgentFallBack" /Disable
-schtasks /Change /TN "Microsoft\Office\OfficeTelemetryAgentLogOn" /Disable
-schtasks /Change /TN "Microsoft\Windows\AppID\SmartScreenSpecific" /Disable
-schtasks /Change /TN "Microsoft\Windows\Application Experience\AitAgent" /Disable
-schtasks /Change /TN "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /Disable
-schtasks /Change /TN "Microsoft\Windows\Application Experience\ProgramDataUpdater" /Disable
-schtasks /Change /TN "Microsoft\Windows\Application Experience\StartupAppTask" /Disable
-schtasks /Change /TN "Microsoft\Windows\Autochk\Proxy" /Disable
-schtasks /Change /TN "Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /Disable
-schtasks /change /TN "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /Disable
-schtasks /Change /TN "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /Disable
-schtasks /Change /TN "Microsoft\Windows\Customer Experience Improvement Program\KernelCeipTask" /Disable
-schtasks /Change /TN "Microsoft\Windows\Customer Experience Improvement Program\Uploader" /Disable
-schtasks /Change /TN "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /Disable
-schtasks /Change /TN "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /Disable
-schtasks /Change /TN "Microsoft\Windows\DiskFootprint\Diagnostics" /Disable
-schtasks /Change /TN "Microsoft\Windows\FileHistory\File History (maintenance mode)" /Disable
-schtasks /Change /TN "Microsoft\Windows\NetTrace\GatherNetworkInfo" /Disable
-schtasks /Change /TN "Microsoft\Windows\PI\Sqm-Tasks" /Disable
-schtasks /Change /TN "Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /Disable
-schtasks /Change /TN "Microsoft\Windows\Shell\FamilySafetyMonitor" /Disable
-schtasks /Change /TN "Microsoft\Windows\Shell\FamilySafetyRefresh" /Disable
-schtasks /Change /TN "Microsoft\Windows\Shell\FamilySafetyUpload" /Disable
-schtasks /Change /TN "Microsoft\Windows\Windows Error Reporting\QueueReporting" /Disable
+# https://docs.microsoft.com/en-us/powershell/module/scheduledtasks/disable-scheduledtask?view=win10-ps
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetry\AgentFallBack2016"
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetry\OfficeTelemetryAgentLogOn2016"
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetryAgentFallBack"
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetryAgentLogOn"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\AppID\SmartScreenSpecific"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\Application Experience\AitAgent"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\Application Experience\ProgramDataUpdater"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\Application Experience\StartupAppTask"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\Autochk\Proxy"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\DiskFootprint\Diagnostics"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\FileHistory\File History (maintenance mode)"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\NetTrace\GatherNetworkInfo"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\PI\Sqm-Tasks"
+Disable-ScheduledTask -TaskName "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem"
+Get-ScheduledTask -TaskPath "\Microsoft\Office\Office 15 Subscription Heartbeat\" | Disable-ScheduledTask
+Get-ScheduledTask -TaskPath "\Microsoft\Office\Office 16 Subscription Heartbeat\" | Disable-ScheduledTask
+Get-ScheduledTask -TaskPath "\Microsoft\Windows\Shell\FamilySafetyMonitor\" | Disable-ScheduledTask
+Get-ScheduledTask -TaskPath "\Microsoft\Windows\Shell\FamilySafetyRefresh\" | Disable-ScheduledTask
+Get-ScheduledTask -TaskPath "\Microsoft\Windows\Shell\FamilySafetyUpload\" | Disable-ScheduledTask
+Get-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Error Reporting\QueueReporting\" | Disable-ScheduledTask
+Get-ScheduledTask -TaskPath "\Microsoft\Windows\Customer Experience Improvement Program\" | Disable-ScheduledTask
+
+
 ##########################################################
-###### Cipher Suites (Schannel SSP)
+###### 			Cipher Suites (Schannel SSP)         #####
 ##########################################################
 # Turn off TLS weak Ciphers - may be reset with servicing updates!
 # Default target set
@@ -1517,7 +1609,7 @@ schtasks /Change /TN "Microsoft\Windows\Windows Error Reporting\QueueReporting" 
 # https://www.nartac.com/Products/IISCrypto/
 # https://docs.microsoft.com/en-us/windows-server/security/tls/manage-tls#configuring-tls-cipher-suite-order
 # https://www.acunetix.com/blog/articles/tls-ssl-cipher-hardening/
-# For Windows to CP: 
+# For Windows to CP:
 # ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
 # Disable-TlsCipherSuite -Name "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA_P256"
 # Disable-TlsCipherSuite -Name "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA_P384"
@@ -1531,7 +1623,7 @@ schtasks /Change /TN "Microsoft\Windows\Windows Error Reporting\QueueReporting" 
 # Disable-TlsCipherSuite -Name "TLS_RSA_WITH_AES_256_CBC_SHA"
 # Disable-TlsCipherSuite -Name "TLS_RSA_WITH_AES_256_CBC_SHA256"
 #
-# Only for older OS Builds! 
+# Only for older OS Builds!
 # Path does not exist on an cipher updated system!
 # SCHANNEL is empty unless you request it e.g. VMWare or in case you use a Windows Server
 # Set but do not enforce!
@@ -1593,7 +1685,7 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders
 # Cipher Suites (order) (fixme)
 Set-ItemProperty -Path "HKLM:\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002" -Name "Functions" -Type String -Value TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA
 ##########################################################
-###### Network Stack
+###### 					Network Stack                #####
 ##########################################################
 # Turn off all "useless" network adapter protocols
 # http://techgenix.com/using-powershell-disable-network-adapter-bindings/
@@ -1625,7 +1717,7 @@ function DisableUnneededProtocols {
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "LargeSystemCache" -Type DWord -Value 0
 #
 # Nagle's Algorithm
-# This tweak is useless since Windows 8.1+, because the Algorithm was replaced by a more efficent one. The default values are usually fine, 
+# This tweak is useless since Windows 8.1+, because the Algorithm was replaced by a more efficent one. The default values are usually fine,
 # I'm not aware of any professional gamer which still uses such a tweak or an outdated OS.
 #
 # Network Throttling Index & System Responsiveness
@@ -1636,7 +1728,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multi
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 20
 # Multimedia Class Scheduler Service (MMCSS) tweaks
 # https://msdn.microsoft.com/en-us/library/windows/desktop/ms684247.aspx
-# default: 0, recommended: 0. Both 0x00 and 0xFFFFFFFF 
+# default: 0, recommended: 0. Both 0x00 and 0xFFFFFFFF
 # Affinity is OS controlled and never CPU, same like e.g. Core Parking and C-states.
 # Application should exclusively ask MMCSS for its help otherwise nothing will be changed because the OS never knows if the app is MMCSS "optimized" or not.
 #Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Affinity" -Type DWord -Value 0
@@ -1655,7 +1747,7 @@ Disable-NetAdapterLso -Name * | Out-Null
 # Turn off Receive-Side Scaling State (RSS)
 netsh int tcp set global rss=disabled | Out-Null
 ##########################################################
-###### PowerShell hardening
+###### 				PowerShell hardening             #####
 ##########################################################
 # (fixme)
 #for /R %f in (powershell*.exe) do (
@@ -1670,9 +1762,10 @@ netsh int tcp set global rss=disabled | Out-Null
 # https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-core-61?view=powershell-6#telemetry-can-only-be-disabled-with-an-environment-variable
 # Turn off Telemetry Data in .NET Core
 # https://www.michaelcrump.net/part12-aspnetcore/
-set DOTNET_CLI_TELEMETRY_OPTOUT=1 | Out-Null
+setx -Ux DOTNET_CLI_TELEMETRY_OPTOUT=1 | Out-Null
+setx -Ux DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 | Out-Null
 ##########################################################
-###### Firewall (ignore the warnings)
+###### 		Firewall (ignore the warnings)           #####
 # Public profile should be used (privacy reasons)
 # Following the CIS standards
 ##########################################################
@@ -1739,31 +1832,219 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Network Connec
 # 'Require domain users to elevate when setting a network's location <-> 'Enabled'
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Network Connections" -Name "NC_StdDomainUserSetLocatio" -Type DWord -Value 1 -Force
 #
-# Null Source IP for e.g. Pi-Hole / AdGuard Home
+# Null route Source IP for e.g. Pi-Hole or AdGuard Home
 #route -p add 131.253.18.253 MASK 255.255.255.255 0.0.0.0
 #
-## LTSB/LTSC 2019 telemetry only
+## Add anti-telemetry domains to hosts incl. LTSB/LTSC 2019
 #
-# MarkMonitor for amazon.com triggers cloudfront.net URLs!
-# This sub-spools a lot of other connections!
-#0.0.0.0 checkappexec.microsoft.com
-#0.0.0.0 client.wns.windows.com
-#0.0.0.0 cy2.vortex.data.microsoft.com.akadns.net
-#0.0.0.0 d2k03kvdk5cku0.cloudfront.net
-#0.0.0.0 d6wjo2hisqfy2.cloudfront.net
-#0.0.0.0 dns.msftncsi.com
-#0.0.0.0 drcwo519tnci7.cloudfront.net
-#0.0.0.0 modern.watson.data.microsoft.com.akadns.net
-#0.0.0.0 settings-win.data.microsoft.com
-#0.0.0.0 storecatalogrevocation.storequality.microsoft.com
-#0.0.0.0 v10.events.data.microsoft.com
-#0.0.0.0 v10.vortex-win.data.microsoft.com
-#0.0.0.0 v20.events.data.microsoft.com
-#0.0.0.0 watson.telemetry.microsoft.com
-#0.0.0.0 www.bing.com
-#0.0.0.0 www.msftconnecttest.com
+#
+# Todo: Sort, redundant check + check if rules exists
+# Todo: Maybe null route instead of blocking (HOSTS bypass by Windows own DNS system?)
+# Todo: ASN block Skype, apps etc. Cloudfront?
+$hosts_file = "$env:systemroot\System32\drivers\etc\HOSTS"
+$domains = @(
+	"checkappexec.microsoft.com"
+	"d2k03kvdk5cku0.cloudfront.net"
+	"d6wjo2hisqfy2.cloudfront.net"
+	"drcwo519tnci7.cloudfront.net"
+	"modern.watson.data.microsoft.com.akadns.net"
+	"rad.live.com"
+	"rad.msn.com"
+	"redir.metaservices.microsoft.com"
+	"schemas.microsoft.akadns.net"
+	"storecatalogrevocation.storequality.microsoft.com"
+	"v10.events.data.microsoft.com"
+	"v10.vortex-win.data.microsoft.com"
+	"v20.events.data.microsoft.com"
+	"watson.microsoft.com"
+	"wes.df.telemetry.microsoft.com"
+	"www.bing.com"
+	"www.msftconnecttest.com"
+    "184-86-53-99.deploy.static.akamaitechnologies.com"
+    "a-0001.a-msedge.net"
+    "a-0002.a-msedge.net"
+    "a-0003.a-msedge.net"
+    "a-0004.a-msedge.net"
+    "a-0005.a-msedge.net"
+    "a-0006.a-msedge.net"
+    "a-0007.a-msedge.net"
+    "a-0008.a-msedge.net"
+    "a-0009.a-msedge.net"
+    "a-msedge.net"
+    "a.ads1.msn.com"
+    "a.ads2.msads.net"
+    "a.ads2.msn.com"
+    "a.rad.msn.com"
+    "a978.i6g1.akamai.net"
+    "a1621.g.akamai.net"
+    "a1856.g2.akamai.net"
+    "a1961.g.akamai.net"
+    "ac3.msn.com"
+    "ad.doubleclick.net"
+    "adnexus.net"
+    "adnxs.com"
+    "ads.msn.com"
+    "ads1.msads.net"
+    "ads1.msn.com"
+    "adservice.google.com"
+    "adservice.google.de"
+    "aidps.atdmt.com"
+    "aka-cdn-ns.adtech.de"
+    "any.edge.bing.com"
+    "apps.skype.com"
+    "az361816.vo.msecnd.net"
+    "az512334.vo.msecnd.net"
+    "b.ads1.msn.com"
+    "b.ads2.msads.net"
+    "b.rad.msn.com"
+    "bingads.microsoft.com"
+    "bs.serving-sys.com"
+    "c.atdmt.com"
+    "c.msn.com"
+    "cdn.atdmt.com"
+    "cds26.ams9.msecn.net"
+    "choice.microsoft.com.nsatc.net"
+    "choice.microsoft.com"
+    "client.wns.windows.com"
+    "compatexchange.cloudapp.net"
+    "corp.sts.microsoft.com"
+    "corpext.msitadfs.glbdns2.microsoft.com"
+    "cs1.wpc.v0cdn.net"
+    "cy2.vortex.data.microsoft.com.akadns.net"
+    "db3aqu.atdmt.com"
+    "df.telemetry.microsoft.com"
+    "diagnostics.support.microsoft.com"
+    "e87.dspb.akamaidege.net"
+    "e2835.dspb.akamaiedge.net"
+    "e3843.g.akamaiedge.net"
+    "e7341.g.akamaiedge.net"
+    "e7502.ce.akamaiedge.net"
+    "e8218.ce.akamaiedge.net"
+    "e9483.a.akamaiedge.net"
+    "ec.atdmt.com"
+    "fe2.update.microsoft.com.akadns.net"
+    "fe2.update.microsoft.com.akadns.net"
+    "feedback.microsoft-hohm.com"
+    "feedback.search.microsoft.com"
+    "feedback.windows.com"
+    "flex.msn.com"
+    "flightingserviceweurope.cloudapp.net"
+    "g.msn.com"
+    "googleads.g.doubleclick.net"
+    "h1.msn.com"
+    "h2.msn.com"
+    "hostedocsp.globalsign.com"
+    "hubspot.net.edge.net"
+    "hubspot.net.edgekey.net"
+    "i1.services.social.microsoft.com.nsatc.net"
+    "i1.services.social.microsoft.com"
+    "insiderppe.cloudapp.net"
+    "insiderservice.microsoft.com"
+    "insiderservice.trafficmanager.net"
+    "ipv6.msftncsi.com.edgesuite.net"
+    "ipv6.msftncsi.com"
+    "lb1.www.ms.akadns.net"
+    "live.rads.msn.com"
+    "livetileedge.dsx.mp.microsoft.com"
+    "m.adnxs.com"
+    "m.hotmail.com"
+    "msedge.net"
+    "msftncsi.com"
+    "msnbot-65-55-108-23.search.msn.com"
+    "msntest.serving-sys.com"
+    "oca.telemetry.microsoft.com.nsatc.net"
+    "oca.telemetry.microsoft.com"
+    "onesettings-db5.metron.live.nsatc.net"
+    "p.static.ads-twitter.com"
+    "pagead46.l.doubleclick.net"
+    "pre.footprintpredict.com"
+    "preview.msn.com"
+    "pricelist.skype.com"
+    "reports.wes.df.telemetry.microsoft.com"
+    "s.gateway.messenger.live.com"
+    "s0.2mdn.net"
+    "secure.adnxs.com"
+    "secure.flashtalking.com"
+    "services.wes.df.telemetry.microsoft.com"
+    "settings-sandbox.data.microsoft.com"
+    "settings-ssl.xboxlive.com-c.edgekey.net.globalredir.akadns.net"
+    "settings-ssl.xboxlive.com-c.edgekey.net"
+    "settings-ssl.xboxlive.com"
+    "sls.update.microsoft.com.akadns.net"
+    "sqm.df.telemetry.microsoft.com"
+    "sqm.telemetry.microsoft.com.nsatc.net"
+    "sqm.telemetry.microsoft.com"
+    "ssw.live.com"
+    "static.2mdn.net"
+    "static.ads-twitter.com"
+    "stats.g.doubleclick.net"
+    "stats.l.doubleclick.net"
+    "statsfe1.ws.microsoft.com"
+    "statsfe2.update.microsoft.com.akadns.net"
+    "statsfe2.update.microsoft.com.akadns.net"
+    "statsfe2.ws.microsoft.com"
+    "survey.watson.microsoft.com"
+    "survey.watson.microsoft.com"
+    "telecommand.telemetry.microsoft.com.nsatc.net"
+    "telecommand.telemetry.microsoft.com"
+    "telemetry.appex.bing.net"
+    "telemetry.microsoft.com"
+    "telemetry.urs.microsoft.com"
+    "ui.skype.com"
+    "view.atdmt.com"
+    "vortex-bn2.metron.live.com.nsatc.net"
+    "vortex-cy2.metron.live.com.nsatc.net"
+    "vortex-sandbox.data.microsoft.com"
+    "vortex-win.data.microsoft.com"
+    "vortex.data.microsoft.com"
+    "watson.live.com"
+    "watson.microsoft.com"
+    "watson.ppe.telemetry.microsoft.com"
+    "watson.ppe.telemetry.microsoft.com"
+    "watson.telemetry.microsoft.com.nsatc.net"
+    "watson.telemetry.microsoft.com.nsatc.net"
+    "watson.telemetry.microsoft.com"
+    "watson.telemetry.microsoft.com"
+    "wdcpalt.microsoft.com"
+    "wes.df.telemetry.microsoft.com"
+    "win10.ipv6.microsoft.com"
+    "www-google-analytics.l.google.com"
+    "www.bingads.microsoft.com"
+    "www.go.microsoft.akadns.net"
+    "www.msftncsi.com"
+)
+# Set proper file encoding and add 0.0.0.0
+# Do not use 127.x because DNS resolution is handled internal
+# and 127 checks each domain if it exists... that's a no-no!
+Write-Output "" | Out-File -Encoding ASCII -Append $hosts_file
+foreach ($domain in $domains) {
+    if (-Not (Select-String -Path $hosts_file -Pattern $domain)) {
+        Write-Output "0.0.0.0 $domain" | Out-File -Encoding ASCII -Append $hosts_file
+    }
+}
+
+# IP's are added into our Windows Firewall
+$ips = @(
+    "2.22.61.43"
+    "2.22.61.66"
+    "23.218.212.69"
+    "64.4.54.254"
+    "65.39.117.230"
+    "65.55.108.23"
+    "134.170.30.202"
+    "137.116.81.24"
+    "157.56.106.189"
+    "184.86.53.99"
+    "204.79.197.200"
+)
+Remove-NetFirewallRule -DisplayName "Anti-Telemetry IPs" -ErrorAction SilentlyContinue
+New-NetFirewallRule -DisplayName "Anti-Telemetry IPs" -Direction Outbound ` -Action Block -RemoteAddress ([string[]]$ips)
+
+
+# Block Cortana via Firewall Rule (fixme)
+New-NetFirewallRule -DisplayName "Anti Cortana Web Access" -Direction Outbound -Program "%windir%\systemapps\Microsoft.Windows.Cortana_cw5n1h2txyewy\SearchUI.exe" -Action Block
 ##########################################################
-###### Bitlocker (VeraCrypt)
+######              Bitlocker (VeraCrypt)            #####
 # If you use VeraCrypt the entries are not written in reg
 ##########################################################
 # Turn on machine account lockout threshold'
@@ -1771,9 +2052,9 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 # Prevent installation of devices that match any of these device IDs"
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceIDs" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
 # Prevent installation of devices that match any of these device IDs: Prevent installation of devices that match any of these device IDs <-> 'PCI\CC_0C0A' (fixme)
-# Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "1" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue 
+# Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "1" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
 # Prevent installation of devices that match any of these device IDs: Also apply to matching devices that are already installed. <-> 'True' (fixme)
-# Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceIDsRetroactive" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue 
+# Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceIDsRetroactive" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
 # Prevent installation of devices using drivers that match these device setup classes <-> 'Enabled'
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceClasses" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
 # Prevent installation of devices using drivers that match these device setup classes: Prevent installation of devices using drivers for these device setup (fixme)
@@ -1891,7 +2172,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "RDVActiveD
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "RDVRequireActiveDirectoryBackup" -Type DWord -Value 0 -Force -ErrorAction SilentlyContinue
 # Configure use of hardware-based encryption for removable data drives <-> 'Enabled'
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "RDVHardwareEncryption" -Type DWord -Value 1 -Force -ErrorAction SilentlyContinue
-# se BitLocker software-based encryption when hardware encryption is not available <-> 'Enabled: True'
+# BitLocker software-based encryption when hardware encryption is not available <-> 'Enabled: True'
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "RDVAllowSoftwareEncryptionFailover" -Type DWord -Value 1 -Force
 # Restrict encryption algorithms and cipher suites allowed for hardware-based encryption <-> 'Enabled: False'
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "RDVRestrictHardwareEncryptionAlgorithms" -Type DWord -Value 0 -Force
@@ -1911,9 +2192,9 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "RDVDenyCro
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "EncryptionMethodWithXtsOs" -Type DWord -Value 7 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "EncryptionMethodWithXtsRdv" -Type DWord -Value 4 -Force
 ##########################################################
-###### MS Office (LibreOffice)
+######              MS Office (LibreOffice)          #####
 ##########################################################
-<# 
+<#
 # Turn on Microsoft Office Updates
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" -Name "enableautomaticupdates" -Type DWord -Value 1 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" -Name "hideenabledisableupdates" -Type DWord -Value 1 -Force
@@ -1979,9 +2260,243 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\16.0\outlook\op
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" -Name "onlinerepair" -Type DWord -Value 0 -Force
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" -Name "fallbacktocdn" -Type DWord -Value 0 -Force
 #>
+
+# (Dynamic Data Exchange) DDE Migration
+# Not needed in LibreOffice
+# https://wiki.documentfoundation.org/Feature_Comparison:_LibreOffice_-_Microsoft_Office#Spreadsheet_applications:_LibreOffice_Calc_vs._Microsoft_Excel
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\Word\Options" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\Word\Options" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\14.0\Word\Options" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\Word\Options\WordMail" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\Word\Options\WordMail" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\14.0\Word\Options\WordMail" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\OneNote\Options" -Name "DisableEmbeddedFiles" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\OneNote\Options" -Name "DisableEmbeddedFiles" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\14.0\OneNote\Options" -Name "DisableEmbeddedFiles" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\Excel\Options" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\Excel\Options" -Name "DDEAllowed" -Type DWord -Value 0 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\Excel\Options" -Name "DDECleaned" -Type DWord -Value 279 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\Excel\Options" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\Excel\Options" -Name "DDEAllowed" -Type DWord -Value 0 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\Excel\Options" -Name "DDECleaned" -Type DWord -Value 117 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\14.0\Excel\Options" -Name "DontUpdateLinks" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\14.0\Excel\Options" -Name "DDEAllowed" -Type DWord -Value 0 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\14.0\Excel\Options" -Name "DDECleaned" -Type DWord -Value 117 -Force
+
+
+# Turn off Macros in Microsoft Office
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\16.0\word\security" -Name "blockcontentexecutionfrominternet" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\16.0\excel\security" -Name "blockcontentexecutionfrominternet" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\16.0\powerpoint\security" -Name "blockcontentexecutionfrominternet" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\15.0\word\security" -Name "blockcontentexecutionfrominternet" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\15.0\excel\security" -Name "blockcontentexecutionfrominternet" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\office\15.0\powerpoint\security" -Name "blockcontentexecutionfrominternet" -Type DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Office\14.0\msproject\security" -Name "VBAWarnings" -Type DWord -Value 2 -Force
+
+# Turn off Office Packer Objects (OLE) (fixme)
+# https://blog.trendmicro.com/trendlabs-security-intelligence/new-cve-2014-4114-attacks-seen-one-week-after-fix/
+# https://docs.microsoft.com/en-us/office365/troubleshoot/activation/control-block-ole-com
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\16.0\Common\COM Compatibility" -Name "ActivationFilterOverride " -Type DWord -Value 1 -Force
+
+
 ##########################################################
-###### termsrv.dll Patching
-# Against GitHub/MS ToS?
+###### 				USer Account Control (UAC)       #####
+##########################################################
+# Turn on Admin Approval Mode
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "FilterAdministratorToken" -Value 1 -Force
+# EnableLUA
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 1 -Force
+# Set UAC to high
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
+
+# Make UAC Great Again (MUGA)
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorUser" -Type DWord -Value 3
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DenyDeviceIDs" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableAutomaticRestartSignOn" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DSCAutomationHostEnabled" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableCursorSuppression" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableFullTrustStartupTasks" -Type DWord -Value 2
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableInstallerDetection" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableSecureUIAPaths" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableUIADesktopToggle" -Type DWord -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableUwpStartupTasks" -Type DWord -Value 2
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableVirtualization" -Type DWord -Value 2
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ShutdownWithoutLogon" -Type DWord -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "SupportFullTrustStartupTasks" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "SupportUwpStartupTasks" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "undockwithoutlogon" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ValidateAdminCodeSignatures" -Type DWord -Value 0
+##########################################################
+###### 					Services                     #####
+###### 			Overview services (not all)
+# http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
+# Todo: Find a way to detect and disable all _xxx services automatically.
+# Todo: Sysrep needs dmwappushserivce.
+##########################################################
+# Turn off Autologger (workaround)
+New-Item "%ProgramData%\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl" -ItemType File -Force
+# Geolocation (workaround)
+Remove-Item -Path "HKCU:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3*" -Recurse
+# Turn off all unwanted services
+$services = @(
+	"AJRouter"									# AllJoyn Router Service | Privacy
+	"ALG"										# Application Layer Gateway Service | Privacy
+	"AxInstSV"									# ActiveX Installer (AxInstSV)
+	"AxInstSVGroup"								# AxInstSVGroup
+	"BcastDVRUserService_*"						# GameDVR and Broadcast User Service (fixme)
+	"BDESVC"									# Bitlocker
+	"BTAGService"								# Bluetooth Audio Gateway Service | Security
+	"bthserv"									# Bluetooth Support Service | Security
+	"CaptureService_*"							# Once Core capture service
+	"CaptureService_*"							# OneCore Capture Service aka telemetry (also exists on LTSC)
+	"cbdhsvc_*"									# Clipboard scenarios
+	"CDPSvc"									# Connected Devices Platform Service
+	"CDPUserSvc_*"								# Connected Devices Platform User Service | Telemetry
+	"Connected Devices Platform scenarios"		# Connected Devices Platform scenarios
+	"ConsentUxUserSvc_*"						# ConsentUX
+	"CscService"								# Offline Files
+	"defragsvc"									# Optimize Drives (defrag) (use other tools in case you defrag)
+	"DevicePickerUserSvc_*"						# Device Picker
+	"DevicesFlowUserSvc_*"						# Device Flow
+	"diagsvc"									# Diagnostic Execution Service
+	"dmwappushsvc"								# WAP Push Service
+	"DoSvc"										# Delivery Optimization
+	"DsSvc"										# Data Sharing Service
+	"DusmSvc"									# Data Usage
+	"fhsvc"										# File History Service | Privacy
+	"irmon"										# Infrared monitor service
+	"LanmanServer"								# Server
+	"LanmanWorkstation"							# Workstation | Security
+	"lfsvc"										# Geolocation Service | Privacy
+	"lmhosts"									# TCP/IP NetBIOS Helper (security)
+	"LxpSvc"									# Language Experience Service
+	"MapsBroker"								# Downloaded Maps Manager
+	"MessagingService_*"						# MessagingService (Home/Pro users) | Privacy
+	"MsKeyboardFilter"							# Microsoft Keyboard Filter (causes a lag better use other drivers)
+	"NaturalAuthentication"						# Natural Authentication
+	"NcaSvc"									# Network Connectivity Assistant (Telemetry)
+	"NcbService"								# Network Connection Broker
+	"NcdAutoSetup"								# Network Connected Devices Auto-Setup
+	"Netlogon"									# Netlogon (domain controller environment only) | Security
+	"NfsClnt"									# Client for NFS
+	"OneSyncSvc_*"								# OneSync
+	"PcaSvc"									# Program Compatibility Assistant Service
+	"PeerDistSvc"								# Branch Cache (P2P / LAN Windows Updates)
+	"PimIndexMaintenanceSvc_*"					# Contact Data
+	"RetailDemo"								# Retail Demo | Privacy
+	"SEMgrSvc"									# Payments and NFC/SE Manager
+	"ShellHWDetection"							# Shell Hardware Detection
+	"shpamsvc"									# Shared PC Account Manager
+	"SmsRouter"									# Microsoft Windows SMS Router Service | Security
+	"SSDPSRV"									# SSDP Discovery (Security)
+	"stisvc"									# Windows Image Acquisition (WIA) | Performance
+	"swprv"										# Microsoft Software Shadow Copy Provider (Backup) | Security
+	"SysMain"									# Superfetch
+	"TermService"								# Remote Desktop Services
+	"TokenBroker"								# Web Account Manager
+	"TrkWks"									# Distributed Link Tracking Client
+	"UevAgentService"							# User Experience Virtualization Service
+	"UI0Detect"									# Interactive Services Detection
+	"UmRdpService"								# Remote Desktop Services UserMode Port Redirector
+	"wbengine"									# Block Level Backup Engine Service (I use Macrium Reflect)
+	"WdiServiceHost"							# Diagnostic Service Host
+	"WdiSystemHost"								# Diagnostic System Host
+	"wercplsupport"								# Problem Reports and Solutions Control Panel Support
+	"WerSvc"									# Windows Error Reporting Service (Telemetry)
+	"WinHttpAutoProxySvc"						# WinHTTP Web Proxy Auto-Discovery Service
+	"wisvc"										# Windows Insider Service
+	"WpcMonSvc"									# Parental Controls
+	"XblAuthManager"							# Xbox Live Auth Manager
+	"XblGameSave"								# Xbox Live Game Save  | Performance
+	"xbox*"										# All other Xbox Services
+	"XboxNetApiSvc"								# Xbox Live Networking Service | Privacy
+    "diagnosticshub.standardcollector.service" 	# Microsoft (R) Diagnostics Hub Standard Collector Service
+    "DiagTrack"								    # Connected User Experiences and Telemetry (Diagnostics)  | Telemetry
+    "dmwappushservice"							# WAP Push Message Routing Service (see known issues) | Telemetry
+    "HomeGroupListener"							# HomeGroup Listener  | Telemetry
+    "HomeGroupProvider"							# HomeGroup Provider    | Telemetry
+    "lfsvc"								    	# Geolocation Service   | Telemetry
+    "MapsBroker"								# Downloaded Maps Manager   | Privacy
+    "ndu"								        # Windows Network Data Usage Monitor    | Privacy (data leakage?)
+    "NetTcpPortSharing"							# Net.Tcp Port Sharing Service
+    "RemoteAccess"								# Routing and Remote Access
+    "RemoteRegistry"							# Remote Registry | Security
+    "SharedAccess"								# Internet Connection Sharing (ICS)
+    "TrkWks"								    # Distributed Link Tracking Client
+    "WbioSrvc"								    # Windows Biometric Service (required for Fingerprint reader / facial detection)
+    "WMPNetworkSvc"								# Windows Media Player Network Sharing Service
+    "wscsvc"								    # Windows Security Center Service
+    "XblAuthManager"							# Xbox Live Auth Manager
+    "XblGameSave"								# Xbox Live Game Save Service
+	"XboxNetApiSvc"								# Xbox Live Networking Service
+	#"AppMgmt"									# Application Management (needed for GPO software)
+	#"BFE"										# Base Filtering Engine - Disable only if you don't use Windows Firewall e.g. for Comodo
+	#"Dnscache "								# DNS Client (only if you use other DNS systems like Unbound/DNSCrypt) | Security & Telemetry
+	#"EventSystem"								# COM+ Event System (security but problematic)
+	#"iphlpsvc"									# IP Helper (IPv6 translation
+	#"IpxlatCfgSvc"								# IP Translation Configuration Service
+	#"Winmgmt"									# Windows Management Instrumentation | Security -> problematic
+    #"WlanSvc"                                 	# WLAN AutoConfig | Security
+    #"WSearch"                                 	# Windows Search used by e.g. Cortana & file index
+)
+
+# Hyper-V (Sandbox/VT/VM/WD/etc. basically the upper layer of Windows 10 new security concept, HVhost is the minimum which must run otherwise WD will cry: Mommy?)
+<#
+Get-Service -DisplayName HvHost | Set-Service -StartupType Disabled
+# Hyper-V Data Exchange Service
+Get-Service -DisplayName vmickvpexchange | Set-Service -StartupType Disabled
+#Hyper-V Guest Service Interface
+Get-Service -DisplayName vmicguestinterface | Set-Service -StartupType Disabled
+# Hyper-V Guest Shutdown Service
+Get-Service -DisplayName vmicshutdown | Set-Service -StartupType Disabled
+# Hyper-V Heartbeat Service
+Get-Service -DisplayName vmicheartbeat | Set-Service -StartupType Disabled
+# Hyper-V Host Compute Service
+Get-Service -DisplayName vmcompute | Set-Service -StartupType Disabled
+# Hyper-V PowerShell Direct Service
+Get-Service -DisplayName vmicvmsession | Set-Service -StartupType Disabled
+# Hyper-V Remote Desktop Virtualization Service
+Get-Service -DisplayName vmicrdv | Set-Service -StartupType Disabled
+# Hyper-V Time Synchronization Service
+Get-Service -DisplayName vmictimesync | Set-Service -StartupType Disabled
+# Hyper-V Virtual Machine Management
+Get-Service -DisplayName vmms | Set-Service -StartupType Disabled
+# Hyper-V Volume Shadow Copy Requestor
+Get-Service -DisplayName vmicvss | Set-Service -StartupType Disabled
+#>
+
+foreach ($service in $services) {
+    Write-Output "Disabling $service"
+    Get-Service -Name $service | Set-Service -StartupType Disabled
+}
+
+
+##########################################################
+###### 				termsrv.dll Patching             #####
+######				Against GitHub/MS ToS?
 ##########################################################
 # Todo
 # (fixme)
+# store errors / warnings (debug) in a sep. file in order to improve the script
+# several other things, secret secret ....
+
+
+##########################################################
+###### 				Run this script as weekly task   #####
+###### Ensure you put the script under `C:\Scripts\`
+# Todo: Copy script directtly to Windows folder and mark it as read-only?!
+##########################################################
+$Trigger= New-ScheduledTaskTrigger -At 11:30am –Weekly
+$User= "NT AUTHORITY\SYSTEM"
+# We don't need any W8 workaround here since we are on PS v6
+$Action= New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "C:\Scripts\CK.ps1"
+Register-ScheduledTask -TaskName "CKsWin10Hardening" -Trigger $Trigger -User $User -Action $Action -RunLevel Highest –Force
+
+
+
+##########################################################
+###### 		Environment variables editor             #####
+######		http://www.rapidee.com/en/download
+##########################################################
