@@ -1,18 +1,2 @@
 ### Todo
-- [ ] List Root CAs I use & tested (which work with EU/Swiss/Ru ISP's)
-- [ ] Mention the browser configuration
-- [ ] List the GPO's I changed
-- [ ] Add Screenshot in a folder `/Screenshots` and integrate them into the Readme.md
-- [ ] Add a software table with categories (?)
-- [ ] List ProcessHacker & x64 & IDA Pro Plugins (_maybe_)
-- [ ] List Browser plugins (_maybe_)
-- [ ] Add official MS docs & reference section for "security" (in case someone wants to work with GPO etc).
-- [ ] Explain how this protects your privacy
-- [ ] Explain possible bypasses (there are no known ones)
-- [ ] Spelling, grammar etc. (as always)
-- [ ] Add an article index
-- [ ] Add OSArmor rules
-- [ ] Add WD rules
-- [ ] Add general GPO/SRP rules
-- [ ] Add MSGM Toolkit "magic" to avoid using tools like O&O
-- [ ] Mention how to configure KeePass
+See [here](https://github.com/CHEF-KOCH/Windows-10-hardening/issues/3).
