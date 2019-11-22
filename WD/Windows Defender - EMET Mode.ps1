@@ -1,16 +1,15 @@
 # Windows Ent. 1909+
-# v0.1 ALPHA
+# v0.2 ALPHA
 # EMET Mode = No Cloud features
-# ATP
+
+# Check process migration with `Get-ProcessMitigation -Name processName.exe` you can control it via per-app basis `Set-ProcessMitigation -<scope> <app executable> -<action> <mitigation or options>,<mitigation or options>,<mitigation or options>`
+
 
 # We need admin rights, ask for elevated permissions first.
 # We are going to supress all errors and silently continue.
-$ErrorActionPreference= 'silentlycontinue'
 
-If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-    Exit
-}
+#Requires -RunAsAdministrator
+#Requires -Version 6
 
 #######################
 #  Backup exclusions  #
@@ -63,6 +62,10 @@ New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Exclu
 #######################
 #      WD Common      #
 #######################
+# Exploit protection was removed since 1909
+# https://techcommunity.microsoft.com/t5/Microsoft-Security-Baselines/Security-baseline-FINAL-for-Windows-10-v1909-and-Windows-Server/ba-p/1023093
+#New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender Security Center\App and Browser protection" -Name "DisallowExploitProtectionOverride" -PropertyType DWord -Value 1 -Force
+
 # Enable Fast Startup Service
 New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "AllowFastServiceStartup" -PropertyType DWord -Value 1 -Force
 # Enable AntiSpyware Defender (Windows Defender)
