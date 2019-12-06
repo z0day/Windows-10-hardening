@@ -11,10 +11,9 @@ _|    _|    _|  _|  _|    _|        _|  _|  _|      _|_|_|_|  _|    _|  _|_|    
        Codename : Waste of time
        Author   : CHEF-KOCH
        License  : GNU General Public License v3.0
-       Version  : 0.4 ALPHA (public version)
+       Version  : pre 0.5 ALPHA (public version)
 
 #>
-
 
 <#
        .SYNOPSIS
@@ -28,6 +27,10 @@ _|    _|    _|  _|  _|    _|        _|  _|  _|      _|_|_|_|  _|    _|  _|_|    
            "correct" way to harden something. Hardening should work for everyone and not only some individuals or for "special" SKUs.
 
            A registry backup will automatically stored onto your system OS drive (default C:\).
+
+       REQUIREMENTS:
+
+       * PowerShell execution policy must be configured to allow script execution!
 
        .NOTES
             -> A script integration into an ISO image is possible, however I do
@@ -75,18 +78,32 @@ _|    _|    _|  _|  _|    _|        _|  _|  _|      _|_|_|_|  _|    _|  _|_|    
            -> FIXME:
 #>
 
+# Custom present
+# FIXME:
+#powershell.exe -NoProfile -ExecutionPolicy Bypass -File CK-No-Defender.ps1 EnableFirewall DisableDefender
+#powershell.exe -NoProfile -ExecutionPolicy Bypass -File CK-No-Defender.ps1 -preset nodefender.txt
+
 # We need admin rights, ask for elevated permissions first.
 #Requires -RunAsAdministrator
+$ErrorActionPreference = "Continue"
 
 # Check minimum PowerShell version first.
-#Requires -Version 5
+#Requires -Version 6
+
+# DISM
+#Requires -Module Dism
+
+# Get location of this script
+#$rootDir = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
 
 # Remove all text from the current PowerShell session (in case there is some)
 Clear-Host
 # Clear Errors
 $Error.Clear()
-# Enforce UTF-8 without BOM as console output.
-$OutputEncoding = [System.Console]::OutputEncoding = [System.Console]::InputEncoding = [System.Text.Encoding]::UTF8
+# Log output in Unicode (UTF-8)
+$OutputEncodingPrevious = $OutputEncoding
+$OutputEncoding = [System.Text.ASCIIEncoding]::Unicode
+#
 #
 # Missing variables
 # IPSec default pre-shared key
@@ -182,7 +199,9 @@ Set-ItemProperty-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
 # No Cross Device Experience
 # This might break StartMenu due to an bug
 # https://github.com/DavidXanatos/priv10/issues/5
+# KB4517389
 # FIXME:
+# Let apps on my other devices open apps and continue experiences on this device
 #New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableCdp" -PropertyType DWord -Value 0 -Force
 # Turn off telemetry for Service Provider Foundation
 # https://docs.Microsoft.com/en-us/powershell/module/spfadmin/set-scspftelemetry?view=systemcenter-ps-2019
@@ -218,11 +237,11 @@ Set-ItemProperty-Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersi
 # https://getadmx.com/?Category=Windows_10_2016&Policy=Microsoft.Policies.SoftwareProtectionPlatform::NoAcquireGT
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\SOFTWARE Protection Platform" -Name "NoGenTicket" -PropertyType DWord -Value 0
 # Turn off "Shared Experiences"
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" -Name "RomeSdkChannelUserAuthzPolicy" -PropertyType DWord -Value 0
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" -Name "RomeSdkChannelUserAuthzPolicy" -PropertyType DWord -Value 0 -Force
 # Turn off automatic connecting to open Wi-Fi networks
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedOEM" -PropertyType DWord -Value 0 -Force
 # Turn off Microsoft consumer experiences (current user)
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -PropertyType DWord -Value 1
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -PropertyType DWord -Value 1 -Force
 # Turn off additional data requests from Microsoft in response to a windows error reporting event
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -PropertyType DWord -Value 1
 # Turn off "Location information" usage & Sensors
@@ -238,7 +257,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentD
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -PropertyType DWord -Value 0 -Force
 # Turn off "File Explorer ads" (Home/Pro users only!)
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWord -Value 0
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowSyncProviderNotifications" -PropertyType DWord -Value 0 -Force
 # Turn off Windows Customer Experience Improvement Program
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows" -Name "CEIPEnable" -PropertyType DWord -Value 0 -Force
 # Turn off location tracking for this device
@@ -288,6 +307,12 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Po
 # Turn off Pen training
 Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Policies\Microsoft\PenTraining" -Name "DisablePenTraining" -PropertyType DWord -Value 1 -Force
 #New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy Objects\{755B3906-A444-45F3-837B-9E7858809463}Machine\SOFTWARE\Policies\Microsoft\PenTraining" -Name "DisablePenTraining" -PropertyType DWord -Value 1 -Force
+
+
+##########################################################
+######   				Repair Apps    		    	######
+##########################################################
+# FIXME: powershell -executionpolicy remotesigned Get-AppxPackage
 
 
 ##########################################################
@@ -444,6 +469,8 @@ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\Kerberos\Para
 ##########################################################
 ######   		    Windows Help + Support   		######
 ##########################################################
+# Turn off Online Tips
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "HelpQualifiedRootDir" -PropertyType DWord -Value 0 -Force
 # Turn off unsafe online help functions
 # Internet Explorer 6 SP1+ (XP)
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "HelpQualifiedRootDir" -PropertyType hex -Value 00,00 -Force
@@ -512,6 +539,7 @@ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Policies" -Name "NtfsDisa
 # Ntfs Encrypt Paging File
 # Windows 7+
 # This will create overheap.
+# fsutil behavior query encryptpagingfile 1
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Policies" -Name "NtfsEncryptPagingFile" -PropertyType DWord -Value 1 -Force
 # NtfsDisable8dot3NameCreation
 # Windows 7+
@@ -582,6 +610,11 @@ Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows NT\Security Ce
 ######   				Explorer.exe				######
 ###### \Software\Microsoft\Windows\CurrentVersion\Explorer
 ##########################################################
+# Remove "Security" Tab
+#Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoSecurityTab" -PropertyType DWord -Value 1 -Force
+# Turn on use of "Radio" Buttons
+# Some OEM's preventing changing it via Windows
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\RadioManagement\SystemRadioState" -Name "(Default)" -PropertyType DWord -Value 1 -Force
 # Rest Screenshot index
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "ScreenshotIndex" -PropertyType DWord -Value 1 -Force
 # Show NTFS files compressed in a different color
@@ -589,7 +622,7 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 # Admin Info URL
 # Windows 7+
 # FIXME: New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "AdminInfoUrl" -PropertyType DWord -Value 1 -Force
-# Disable Roamed Profile Init
+# Disable Roamed Profile
 # Windows 8+
 #New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "DisableRoamedProfileInit" -PropertyType DWord -Value 1 -Force
 # No Heap Termination On Corruption
@@ -625,7 +658,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion
 
 
 
-# Turn off Certificate Updates (DO NOT disable it)
+# Turn off Certificate Updates (DO NOT disable it!)
 #New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\SystemCertificates\AuthRoot" -Name "DisableRootAutoUpdate" -PropertyType DWord -Value 1 -Force
 # Turn off Explorer Telemetry
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "TelemetrySalt" -PropertyType DWord -Value 3 -Force
@@ -642,7 +675,7 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "HidePeopleBar" -PropertyType DWord -Value 1
 # Hide "Remove Hardware and Eject Media" Button until next reboot
 # https://superuser.com/questions/12955/how-can-i-remove-the-option-to-eject-sata-drives-from-the-windows-7-tray-icon
-Set-ItemProperty -Path "KCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Applets\SysTray called Services" -Name "Services " -PropertyType DWord -Value 29
+Set-ItemProperty -Path "KCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Applets\SysTray called Services" -Name "Services" -PropertyType DWord -Value 29
 # Turn off Thumbs.db thumbnail cache files only on network folders
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "DisableThumbsDBOnNetworkFolders" -PropertyType DWord -Value 1
 # Turn on thumbnails
@@ -1624,7 +1657,6 @@ New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\iSCSI" -Name "
 # Windows 10
 # (NOSERVER)
 New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "ConfigureWindowsSpotlight" -PropertyType DWord -Value 2 -Force
-New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -PropertyType DWord -Value 1 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableThirdPartySuggestions" -PropertyType DWord -Value 1 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightFeatures" -PropertyType DWord -Value 1 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightOnActionCenter" -PropertyType DWord -Value 1 -Force
@@ -1639,6 +1671,8 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" 
 # Disable Windows Spotlight on settings
 # Windows 10 RS4+ (NOSERVER)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightOnSettings" -PropertyType DWord -Value 1 -Force
+# Live Tiles
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "NoCloudApplicationNotification" -PropertyType DWord -Value 1 -Force
 
 
 ##########################################################
@@ -1828,6 +1862,10 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 ##########################################################
 ######                  Apps                        ######
 ##########################################################
+# Speech privacy
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy" -Name "HasAccepted" -PropertyType DWord -Value 0 -Force
+
+
 # Turn off "Connect Now" Wizard (not in LTSB/LTSC and 1603+) (NOSERVER)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WCN\Registrars" -Name "DisableFlashConfigRegistrar" -PropertyType DWord -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WCN\Registrars" -Name "DisableInBand802DOT11Registrar" -PropertyType DWord -Value 0 -Force
@@ -1897,6 +1935,7 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\P
 # Windows 10 <= 1603
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompa" -Name "DisableInventory" -PropertyType DWord -Value 1 -Force
 # Do not allow apps to use advertising ID
+# EDU/Pro/Home
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -PropertyType DWord -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Id" -PropertyType String -Value "null" -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -PropertyType DWord -Value 1
@@ -2156,8 +2195,6 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentD
 # Hide "Recent folders" in Quick access
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "ShowFrequent" -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "ShowFrequent" -PropertyType DWord -Value 0 -Force
-# Hide Cortana search box and search icon on taskbar
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -PropertyType DWord -Value 0
 # Unpin all Start Menu tiles
 $key = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*start.tilegrid`$windows.data.curatedtilecollection.tilecollection\Current"
 $data = $key.Data[0..25] + ([byte[]](202,50,0,226,44,1,1,0,0))
@@ -2173,9 +2210,18 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "MMTaskbarGlomLevel" -PropertyType DWord -Value 2
 
 
+
+
+
 ##########################################################
-######                    BITS                      ######
+######                Windows Search                ######
 ##########################################################
+# Prevent launch of SearchUI
+# FIXME: # c:\windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\SearchUI.exe
+# Hide Cortana search box and search icon on taskbar
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -PropertyType DWord -Value 0
+
+
 
 
 
@@ -2200,6 +2246,11 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Biometrics\FacialFeatu
 ######      Microsoft Edge (old non Chomium based)  ######
 ###### LTSB\C versions do not include Microsoft Edge #####
 ##########################################################
+# PDF files that have both landscape and portrait pages, print each in its own orientation
+# 1909+
+# FIXME: Set-ItemProperty -Path "HKLM:\Windows Components\Microsoft Edge" -Name "MSCompatibilityMode" -PropertyType DWord -Value 0
+
+
 # Turn off "Compatibility List"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\BrowserEmulation" -Name "MSCompatibilityMode" -PropertyType DWord -Value 0
 # Set a "Blank" Startpage (FIXME:)
@@ -2243,7 +2294,7 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Edge Dev" -Name "UsageStatsInSa
 # Turn on override prevention "SmartScreen for Windows Store apps"
 # New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" -Name "PreventOverride" -PropertyType DWord -Value 1 -Force
 # Turn on (set to Warning) "SmartScreen for Windows Store apps"
-#New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" -Name "EnableWebContentEvaluation" -PropertyType DWord -Value 0 -Force
+New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" -Name "EnableWebContentEvaluation" -PropertyType DWord -Value 0 -Force
 #  Turn on (set to Warning) "SmartScreen for Microsoft Edge" (FIXME:)
 #New-ItemProperty -Path "HKCU:\SOFTWARE\Classes\Local Settings\SOFTWARE\Microsoft\Windows\CurrentVersion\AppContainer\Storage\Microsoft.Microsoftedge_8wekyb3d8bbwe\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -PropertyType DWord -Value "1" -Force
 # Disable Adobe Flash
@@ -2256,7 +2307,11 @@ Remove-Item -Path "$value\Microsoft Edge.lnk" -Force -ErrorAction SilentlyContin
 # Turn off creation of an MS Edge shortcut on the desktop for each user profile
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableEdgeDesktopShortcutCreation" -PropertyType DWord -Value 1 -Force
 # Prevent Microsoft Edge to start and load the Start and New Tab page at Windows startup and after each time Microsoft Edge is closed
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" -Name "AllowTabPreloading" -PropertyType DWord -Value 0
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" -Name "AllowTabPreloading" -PropertyType DWord -Value 0
+# Do not allow prelaunch
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main" -Name "AllowPrelaunch" -PropertyType DWord -Value 0
+
+
 
 ##########################################################
 ###### 	        Mobile PC Presentation              ######
@@ -2386,7 +2441,8 @@ New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies
 # AppRecommendations
 # PreferStore
 # StoreOnly
-Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SmartScreen" -Name "ConfigureAppInstallControlEnabled" -PropertyType DWord -Value 0 -Force
+# FIXME: 1 or 0
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\SmartScreen" -Name "ConfigureAppInstallControlEnabled" -PropertyType DWord -Value 1 -Force
 # Hide notification about disabled Smartscreen for Microsoft Edge
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name "AppAndBrowser_EdgeSmartScreenOff" -PropertyType DWord -Value 0 -Force
 # Turn off SmartScreen for apps and files
@@ -2414,6 +2470,8 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Phishing
 ###### Test samples: https://www.eicar.org/?page_id=3950 #
 # Test website: http://www.wicar.org/test-malware.html   #
 ##########################################################
+# Turn off enhanced Notifications
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Reporting" -Name "DisableEnhancedNotifications" -PropertyType DWord -Value 1 -Force
 # Enable Windows Defender Tamper protection
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Defender\Features" -Name "TamperProtection" -PropertyType DWord -Value 5 -Force
 # Disable Windows Defender (master toggle) (you need to reboot)
@@ -2500,6 +2558,7 @@ Set-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name 
 Set-MpPreference -EnableControlledFolderAccess $true | Out-Null
 # Turn off submission of Windows Defender Malware Samples
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Defender\SubmitSamplesConsent" -Name "value" -PropertyType DWord -Value 2 -Force
+# New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Name "SubmitSamplesConsent" -PropertyType DWord -Value 2 -Force
 # Turn off Windows Defender Trayicon
 #Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" -Name "HideSystray" -PropertyType DWord -Value 1
 # Turn off Cloud Protection
@@ -2624,8 +2683,9 @@ Set-MpPreference -HighThreatDefaultAction 0 | Out-Null
 ######                      HomeGroup               ######
 ##########################################################
 # Turn off HomeGroup (default and can't re-enabled)
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\HomeGroup" -Name "DisableHomeGroup" -PropertyType DWord -Value 1
-Set-ItemProperty -Path "HKCU:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\HomeGroup" -Name "DisableHomeGroup" -PropertyType DWord -Value 1
+# 1607 - obsolete
+#Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\HomeGroup" -Name "DisableHomeGroup" -PropertyType DWord -Value 1
+#Set-ItemProperty -Path "HKCU:\SOFTWARE\WOW6432Node\Policies\Microsoft\Windows\HomeGroup" -Name "DisableHomeGroup" -PropertyType DWord -Value 1
 
 
 ##########################################################
@@ -2897,7 +2957,7 @@ Set-ItemProperty -ErrorAction SilentlyContinue -Path "HKLM:\SOFTWARE\Policies\Mi
 Set-ItemProperty -ErrorAction SilentlyContinue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{E5323777-F976-4f5b-9B55-B94699C46E44}" -Name "Value" -PropertyType String -Value "Deny" | Out-Null
 # Disable "Let websites provide locally relevant content by accessing my language list"
 Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Internet Explorer\International" -Name "AcceptLanguage" -Force
-Set-ItemProperty -ErrorAction SilentlyContinue -Path "HKCU:\Control Panel\International\User Profile" -Name HttpAcceptLanguageOptOut -Value 1 | Out-Null
+Set-ItemProperty -ErrorAction SilentlyContinue -Path "HKCU:\Control Panel\International\User Profile" -Name "HttpAcceptLanguageOptOut" -Value 1 | Out-Null
 # Disable "Let apps use my microphone"
 # I personally need a Mic, let it enabled and work with the internal whitelist or GPO
 #Set-ItemProperty -ErrorAction SilentlyContinue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{2EEF81BE-33FA-4800-9670-1CD474972C3F}\" -Name "Value" -PropertyType String -Value "Deny" | Out-Null
@@ -2985,6 +3045,13 @@ Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows Nt\CurrentVersion\Winlo
 ##########################################################
 ######              Internet Explorer               ######
 ##########################################################
+# Keep all intranet sites in Internet Explorer
+# 1909+
+# FIXME: Set-ItemProperty -Path "HKCU:\Windows Components\Internet Explorer" -Name "MSCompatibilityMode" -PropertyType DWord -Value 0
+# Keep all intranet sites in Internet Explorer
+# https://go.microsoft.com/fwlink/?linkid=2094210
+# 1909+
+# FIXME: Set-ItemProperty -Path "HKLM:\Machine\Windows Components\Internet Explorer" -Name "SendIntranetToInternetExplorer" -PropertyType DWord -Value 1 -Force
 # Turn off "Master" check (Domain)
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Browser\Parameters" -Name "MaintainServerList" -PropertyType ExpandString -Value "no"
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Browser\Parameters" -Name "IsDomainMaster" -PropertyType ExpandString -Value "no"
@@ -3023,7 +3090,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Pref
 # Enforce DEP in Internet Explorer
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DEPOff" -PropertyType DWord -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "Isolation64Bit" -PropertyType DWord -Value 1
-# Turn off IE Background Sync Status
+# Turn off Background synchronization for feeds and Web Slices
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds" -Name "BackgroundSyncStatus" -PropertyType DWord -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds" -Name "BackgroundSyncStatus" -PropertyType DWord -Value 0
 # Turn off Site List Editing
@@ -3072,6 +3139,11 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main
 # Enforce new blank tabs
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Internet Explorer\TabbedBrowsing" -Name "NewTabPageShow" -PropertyType DWord -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\TabbedBrowsing" -Name "NewTabPageShow" -PropertyType DWord -Value 0 -Force
+# ActiveX control blocking
+Remove-ItemProperty -Path "HCU:\Software\Microsoft\Internet Explorer\VersionManager" -Name "DownloadVersionList" -PropertyType DWord -Value 0 -Force
+# License Manager
+# Removed since some builds (1609?)
+#Remove-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LicenseManager" -Name "Start" -PropertyType DWord -Value 3 -Force
 ###############################################
 ###### MS Store & Apps (master toggle)   ######
 ###############################################
@@ -3099,7 +3171,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" -Name "D
 # Turn off all running backgrounds apps
 # Basically a master toggle for GPO based settings
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivac" -Name "LetAppsRunInBackground" -PropertyType DWord -Value 2 -Force
-# Turn off auto app updates
+# Turn off auto App updates
 # Windows 8+ (windows 8 use a value of 2 or 3 while 10 uses 2 or 4)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" -Name "AutoDownload" -PropertyType DWord -Value 2 -Force
 # Disable app URI handlers
@@ -3204,7 +3276,7 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service\
 
 <#
 
-# IDLE Timouout
+# IDLE Timeout
 # Min = 0
 # Max = 2147483647
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service\WinRS" -Name "IdleTimeout" -PropertyType DWord -Value 0 -Force
@@ -3564,7 +3636,9 @@ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
 # Vista+
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -PropertyType DWord -Value 0
 # Turn off Clipboard History capability
+# https://support.microsoft.com/en-in/help/4464215/windows-10-get-help-with-clipboard
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -PropertyType DWord -Value 0 -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowCroosDeviceClipboard" -PropertyType DWord -Value 0 -Force
 # Turn on untrusted Font blocking (WD controlled)
 # <deleted> = (Default)
 # 00,10,a5,d4,e8,00,00,00 (1000000000000) = Block untrusted fonts and log events (CIS)
@@ -3575,10 +3649,11 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\MitigationO
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" -Name "DisableExceptionChainValidation" -PropertyType DWord -Value 0 -Force
 # Turn on Safe DLL search mode (SafeDllSearchMode)
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "SafeDllSearchMode" -PropertyType DWord -Value 1 -Force
-# Turn off Enable Font Providers
+# Turn off Font Providers
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableFontProviders" -PropertyType DWord -Value 0 -Force
 # Turn off IPv6 (Ensure TCPIP6 Parameter 'DisabledComponents <-> '0xff (255))
-# - I use IPv6 and my router filters Teredo/6to4/ISATAP traffic. -
+# I use IPv6 with my router filters Teredo/6to4/ISATAP traffic, however ISATAP and 6to4 got disabled by default since Creators Update
+# https://techcommunity.microsoft.com/t5/Networking-Blog/Core-Network-Stack-Features-in-the-Creators-Update-for-Windows/ba-p/339676
 # 0000000 = Enable all IPv6 components
 # 0000xff = Disable all IPv6 components (CIS)
 # 0000002 = Disable 6to4
@@ -3633,8 +3708,6 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" 
 #Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "FeatureSettingsOverrideMask" -Value "00000003"
 # Turn off access to mapped drives from app running with elevated permissions with Admin Approval Mode enabled
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLinkedConnections" -PropertyType DWord -Value 0
-# Do not let any Website provide locally relevant content by accessing language list
-Set-ItemProperty -Path "HKCU:\Control Panel\International\User Profile" -Name "HttpAcceptLanguageOptOut" -PropertyType DWord -Value 1
 # Turn off Domain Picture Passwords
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "BlockDomainPicturePassword" -PropertyType DWord -Value 1 -Force
 
@@ -4178,7 +4251,7 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameUX" -Name 
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameUX" -Name "GameUpdateOptions" -PropertyType DWord -Value 0 -Force
 # Turn off Windows Game Recording & Broadcasting (it does not matter if you enable/disable it, it's my own preference MS fixed performancd regressions)
 # Windows 10+ (NOSERVER)
-New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowgameDVR" -PropertyType DWord -Value 0 -Force
+#New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowgameDVR" -PropertyType DWord -Value 0 -Force
 # Turn off GameDVR
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" -Name AppCaptureEnabled -PropertyType DWord -Value 0 -Force
 New-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -PropertyType DWord -Value 0 -Force
@@ -4190,7 +4263,7 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\GameBar" -Name "ShowStartupPane
 ##########################################################
 ###### 					MS One Drive                ######
 ##########################################################
-# Uninstall Once Drive
+# Uninstall One Drive
 Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Force
 Remove-ItemProperty -Path "HKCU:\Software\Microsoft\OneDrive -Name DisablePersonalSync" -Force
 <#
@@ -4219,6 +4292,9 @@ Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Recurse -Force -ErrorA
 Remove-Item -Path "$env:ProgramData\Microsoft OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
 #>
 Unregister-ScheduledTask -TaskName *OneDrive* -Confirm:$false
+# Turn off user pre sign-in traffic
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\OneDrive" -Name "PreventNetworkTrafficPreUserSignIn" -PropertyType DWord -Value 1
+
 ##########################################################
 ###### 						Sound                   ######
 ##########################################################
@@ -4255,6 +4331,7 @@ Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies
 #>
 # Silence MRT Tool (you still can whenever you want manually dl and execute it)
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\MRT" -Name "DontReportInfectionInformation" -PropertyType DWord -Value 1 - Force
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\MRT" -Name "DontOfferThroughWUAU" -PropertyType DWord -Value 1 - Force
 # Supress any Windows Update restarts
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\WindowsUpdate\UX\Settings" -Name "UxOption" -PropertyType DWord -Value 1
 # Reveal latest Windows Update time (LastSuccessTime)
@@ -4520,8 +4597,6 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\W32time\TimeProviders\
 # Turn on BIOS time (UTC)
 # Workaround for some Linux distros
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -PropertyType DWord -Value 1
-# Turn on BIOS time (local time)
-#Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -ErrorAction SilentlyContinue
 # Change NTP server to pool.ntp.org
 w32tm /config /syncfromflags:manual /manualpeerlist:"0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org"
 
@@ -4904,9 +4979,42 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders
 #New-Item -Path $env:WinDir\Sun\Java\Deployment -ItemType Directory -Force | Out-Null
 
 
+
+##########################################################
+###### 					    USB                      #####
+##########################################################
+# Deny all access for all Removable Storage
+# Vista+
+# FIXME: Set it per-device
+#Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices" -Name "Deny_All" -PropertyType DWord -Value 1 -Force
+#Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices" -Name "Deny_All" -PropertyType DWord -Value 1 -Force
+
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Execute" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Read" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Write" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Execute" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Read" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Write" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56311-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Execute" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56311-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Read" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56311-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Write" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56311-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Execute" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56311-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Read" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56311-b6bf-11d0-94f2-00a0c91efb8b}" -Name "Deny_Write" -PropertyType DWord -Value 1 -Force
+
+
 ##########################################################
 ###### 					Network Stack                #####
 ##########################################################
+<#
+# Disable IPv6
+Set-service Tcpip6 -StartupType disabled
+Set-service wanarpv6 -StartupType disabled
+Set-service iphlpsvc -StartupType disabled
+#>
+# Prefer IPv4 over IPv6
+# https://support.microsoft.com/en-in/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users
+#Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\tcpip6\Parameters" -Name "DisabledComponents" | Select-Object -exp DisabledComponents Set-Itemproperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\tcpip6\Parameters" -Name "DisabledComponents" -value 32
 # Turn off ISATAP
 # Turn off ^^ (FIXME:, not a dword, reg_sz)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\TCPIP\v6Transition" -Name "ISATAP_State" -PropertyType DWord -Value "Disabled" -Force
@@ -4966,7 +5074,7 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
 # https://www.tenforums.com/tutorials/90033-enable-disable-ipv6-windows.html
 function DisableUnneededProtocols {
 	$Components = @(
-                    'Client for Microsoft Networks'
+					'Client for Microsoft Networks'
 					'File and Printer Sharing for Microsoft Networks'
 					#'Internet Protocol Version 6 (TCP/IPv6)'
 					'Link-Layer Topology Discovery Mapper I/O Driver'
@@ -5018,9 +5126,36 @@ Disable-NetAdapterRsc -Name * | Out-Null
 Disable-NetAdapterLso -Name * | Out-Null
 # Turn off Receive-Side Scaling State (RSS)
 netsh int tcp set global rss=disabled | Out-Null
+# Turn off "TCP Fast Open" due to privacy concerns
+# RFC 7413
+# Once enabled data can be sent before the connection complete!
+# https://arxiv.org/pdf/1905.03518
+# https://blogs.windows.com/msedgedev/2016/06/15/building-a-faster-and-more-secure-web-with-tcp-fast-open-tls-false-start-and-tls-1-3/
+netsh int tcp set global fastopen=disabled | Out-Null
+# Turn off ECN function
+# Most (if not all routers) supporting large data traffic with "Explicit Congestion Notification" (ECN)
+netsh int tcp set global ecncapability=enabled | Out-Null
+# Turn off RFC 1323 )known as time stamps)
+# Why? Because each data package gets 2,5 kb bigger and we want to avoid
+# all "useless traffic".
+netsh int tcp set global timestamps=disabled | Out-Null
+# VMWAre Workaround
+# https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=2129176
+#Disable-NetAdapterRsc -Name Ethernetx | Out-Null
+#netsh int tcp set global RSC=disabled | Out-Null
+# better workaround within VMWAre
+#esxcli system settings advanced set -o /Net/Vmxnet3SwLRO -i 0
+#esxcli system settings advanced set -o /Net/Vmxnet3HwLRO -i 0
 ##########################################################
 ###### 				PowerShell hardening             #####
 ##########################################################
+# Set default language mode
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?view=powershell-6
+# protection against GandCrab Ransomware & Co.
+# Peristent
+[Environment]::SetEnvironmentVariable('__PSLockdownPolicy', '4', 'Machine')
+# Current session only
+#$ExecutionContext.SessionState.LanguageMode = "ConstrainedLanguage"
 # Set the default PowerShell Execution Policy
 # Windows 7+
 # FIXME: -> string
@@ -5056,6 +5191,8 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Tra
 # Public profile should be used (privacy reasons)
 # Following the CIS standards
 ##########################################################
+# Block Cortana
+#Powershell Set-NetFirewallRule -DisplayName search -Action Block
 # Workaround for Port 135 listening status
 # https://www.grc.com/freeware/dcom.htm
 netsh advfirewall firewall add rule name="Prevent TCP Port 135 listening" protocol=TCP dir=in localport=135 action=block enable=yes
@@ -5140,24 +5277,6 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Network Connec
 # Todo: dnsapi.dll hardcoded domains!
 $hosts_file = "$env:systemroot\System32\drivers\etc\HOSTS"
 $domains = @(
-	"checkappexec.Microsoft.com"
-	"d2k03kvdk5cku0.cloudfront.net"
-	"d6wjo2hisqfy2.cloudfront.net"
-	"drcwo519tnci7.cloudfront.net"
-	"modern.watson.data.Microsoft.com.akadns.net"
-	"rad.live.com"
-	"rad.msn.com"
-	"redir.metaservices.Microsoft.com"
-	"schemas.Microsoft.akadns.net"
-	"storecatalogrevocation.storequality.Microsoft.com"
-	"v10.events.data.Microsoft.com"
-	"v10.vortex-win.data.Microsoft.com"
-	"v20.events.data.Microsoft.com"
-	"watson.Microsoft.com"
-	"wes.df.telemetry.Microsoft.com"
-	"www.bing.com"
-	"www.msftconnecttest.com"
-    "184-86-53-99.deploy.static.akamaitechnologies.com"
     "a-0001.a-msedge.net"
     "a-0002.a-msedge.net"
     "a-0003.a-msedge.net"
@@ -5172,10 +5291,13 @@ $domains = @(
     "a.ads2.msads.net"
     "a.ads2.msn.com"
     "a.rad.msn.com"
+    "a23-218-212-69.deploy.static.akamaitechnologies.com"
+    "client.wns.windows.com"
+    "dns.msftncsi.com"
+    "a248.e.akamai.net"
     "a1621.g.akamai.net"
     "a1856.g2.akamai.net"
     "a1961.g.akamai.net"
-    "a978.i6g1.akamai.net"
     "ac3.msn.com"
     "ad.doubleclick.net"
     "adnexus.net"
@@ -5183,126 +5305,105 @@ $domains = @(
     "ads.msn.com"
     "ads1.msads.net"
     "ads1.msn.com"
-    "adservice.google.com"
-    "adservice.google.de"
     "aidps.atdmt.com"
     "aka-cdn-ns.adtech.de"
-    "any.edge.bing.com"
     "apps.skype.com"
     "az361816.vo.msecnd.net"
     "az512334.vo.msecnd.net"
     "b.ads1.msn.com"
     "b.ads2.msads.net"
     "b.rad.msn.com"
-    "bingads.Microsoft.com"
     "bs.serving-sys.com"
     "c.atdmt.com"
     "c.msn.com"
     "cdn.atdmt.com"
     "cds26.ams9.msecn.net"
-    "choice.Microsoft.com.nsatc.net"
-    "choice.Microsoft.com"
-    "client.wns.windows.com"
+    "choice.microsoft.com"
+    "choice.microsoft.com.nsatc.net"
     "compatexchange.cloudapp.net"
-    "corp.sts.Microsoft.com"
-    "corpext.msitadfs.glbdns2.Microsoft.com"
+    "corp.sts.microsoft.com"
+    "corpext.msitadfs.glbdns2.microsoft.com"
     "cs1.wpc.v0cdn.net"
-    "cy2.vortex.data.Microsoft.com.akadns.net"
     "db3aqu.atdmt.com"
-    "df.telemetry.Microsoft.com"
-    "diagnostics.support.Microsoft.com"
+    "df.telemetry.microsoft.com"
+    "diagnostics.support.microsoft.com"
     "e2835.dspb.akamaiedge.net"
-    "e3843.g.akamaiedge.net"
     "e7341.g.akamaiedge.net"
     "e7502.ce.akamaiedge.net"
     "e8218.ce.akamaiedge.net"
-    "e87.dspb.akamaidege.net"
-    "e9483.a.akamaiedge.net"
     "ec.atdmt.com"
-    "fe2.update.Microsoft.com.akadns.net"
-    "feedback.Microsoft-hohm.com"
-    "feedback.search.Microsoft.com"
+    "fe2.update.microsoft.com.akadns.net"
+    "feedback.microsoft-hohm.com"
+    "feedback.search.microsoft.com"
     "feedback.windows.com"
     "flex.msn.com"
-    "flightingserviceweurope.cloudapp.net"
     "g.msn.com"
-    "googleads.g.doubleclick.net"
     "h1.msn.com"
-    "h2.msn.com"
-    "hostedocsp.globalsign.com"
-    "hubspot.net.edge.net"
-    "hubspot.net.edgekey.net"
-    "i1.services.social.Microsoft.com.nsatc.net"
-    "i1.services.social.Microsoft.com"
-    "insiderppe.cloudapp.net"
-    "insiderservice.Microsoft.com"
-    "insiderservice.trafficmanager.net"
-    "ipv6.msftncsi.com.edgesuite.net"
-    "ipv6.msftncsi.com"
+    "i1.services.social.microsoft.com"
+    "i1.services.social.microsoft.com.nsatc.net"
     "lb1.www.ms.akadns.net"
     "live.rads.msn.com"
-    "livetileedge.dsx.mp.Microsoft.com"
     "m.adnxs.com"
     "m.hotmail.com"
     "msedge.net"
     "msftncsi.com"
     "msnbot-65-55-108-23.search.msn.com"
     "msntest.serving-sys.com"
-    "oca.telemetry.Microsoft.com.nsatc.net"
-    "oca.telemetry.Microsoft.com"
-    "onesettings-db5.metron.live.nsatc.net"
-    "p.static.ads-twitter.com"
-    "pagead46.l.doubleclick.net"
+    "oca.telemetry.microsoft.com"
+    "oca.telemetry.microsoft.com.nsatc.net"
     "pre.footprintpredict.com"
     "preview.msn.com"
     "pricelist.skype.com"
-    "reports.wes.df.telemetry.Microsoft.com"
+    "rad.live.com"
+    "rad.msn.com"
+    "redir.metaservices.microsoft.com"
+    "reports.wes.df.telemetry.microsoft.com"
     "s.gateway.messenger.live.com"
-    "s0.2mdn.net"
+    "schemas.microsoft.akadns.net"
     "secure.adnxs.com"
     "secure.flashtalking.com"
-    "services.wes.df.telemetry.Microsoft.com"
-    "settings-sandbox.data.Microsoft.com"
-    "settings-ssl.xboxlive.com-c.edgekey.net.globalredir.akadns.net"
-    "settings-ssl.xboxlive.com-c.edgekey.net"
-    "settings-ssl.xboxlive.com"
-    "sls.update.Microsoft.com.akadns.net"
-    "sqm.df.telemetry.Microsoft.com"
-    "sqm.telemetry.Microsoft.com.nsatc.net"
-    "sqm.telemetry.Microsoft.com"
-    "ssw.live.com"
+    "services.wes.df.telemetry.microsoft.com"
+    "settings-sandbox.data.microsoft.com"
+    "settings-win.data.microsoft.com"
+    "sls.update.microsoft.com.akadns.net"
+    "sO.2mdn.net"
+    "sqm.df.telemetry.microsoft.com"
+    "sqm.telemetry.microsoft.com"
+    "sqm.telemetry.microsoft.com.nsatc.net"
     "static.2mdn.net"
-    "static.ads-twitter.com"
-    "stats.g.doubleclick.net"
-    "stats.l.doubleclick.net"
-    "statsfe1.ws.Microsoft.com"
-    "statsfe2.update.Microsoft.com.akadns.net"
-    "statsfe2.ws.Microsoft.com"
-    "survey.watson.Microsoft.com"
-    "telecommand.telemetry.Microsoft.com.nsatc.net"
-    "telecommand.telemetry.Microsoft.com"
+    "statsfe1.ws.microsoft.com"
+    "statsfe2.update.microsoft.com.akadns.net"
+    "statsfe2.ws.microsoft.com"
+    "survey.watson.microsoft.com"
+    "telecommand.telemetry.microsoft.com"
+    "telecommand.telemetry.microsoft.com.nsatc.net"
     "telemetry.appex.bing.net"
-    "telemetry.Microsoft.com"
-    "telemetry.urs.Microsoft.com"
+    "telemetry.appex.bing.net:443"
+    "telemetry.microsoft.com"
+    "telemetry.urs.microsoft.com"
     "ui.skype.com"
     "view.atdmt.com"
+    "v10.events.data.microsoft.com"
+    "v20.events.data.microsoft.com"
+    "v30.events.data.microsoft.com"
     "vortex-bn2.metron.live.com.nsatc.net"
     "vortex-cy2.metron.live.com.nsatc.net"
-    "vortex-sandbox.data.Microsoft.com"
-    "vortex-win.data.Microsoft.com"
-    "vortex.data.Microsoft.com"
+    "vortex-sandbox.data.microsoft.com"
+    "vortex-win.data.microsoft.com"
+    "vortex.data.microsoft.com"
     "watson.live.com"
-    "watson.Microsoft.com"
-    "watson.ppe.telemetry.Microsoft.com"
-    "watson.telemetry.Microsoft.com.nsatc.net"
-    "watson.telemetry.Microsoft.com"
-    "wdcpalt.Microsoft.com"
-    "wes.df.telemetry.Microsoft.com"
-    "win10.ipv6.Microsoft.com"
-    "www-google-analytics.l.google.com"
-    "www.bingads.Microsoft.com"
-    "www.go.Microsoft.akadns.net"
+    "watson.microsoft.com"
+    "v10.vortex-win.data.microsoft.com"
+    "storecatalogrevocation.storequality.microsoft.com"
+    "modern.watson.data.microsoft.com.akadns.net"
+    "cy2.vortex.data.microsoft.com.akadns.net"
+    "watson.ppe.telemetry.microsoft.com"
+    "watson.telemetry.microsoft.com"
+    "watson.telemetry.microsoft.com.nsatc.net"
+    "wes.df.telemetry.microsoft.com"
+    "www.msftconnecttest.com"
     "www.msftncsi.com"
+    #"www.bing.com"
 )
 # Set proper file encoding and add 0.0.0.0
 # Do not use 127.x because DNS resolution is handled internal
@@ -5315,22 +5416,739 @@ foreach ($domain in $domains) {
 }
 
 # IP's are added into our Windows Firewall
+# Level 0 Telemetry
 $ips = @(
     # Too many IPs will cause svchost.exe to freak out
     # we are excluding AMS, Cloudfont & other CDN's.
-    "2.22.61.43"
-    "2.22.61.66"
-    "23.218.212.69"
-    "64.4.54.254"
-    "65.39.117.230"
+    # IP's captured via Win 10 private Firewall AFTER setting Telemetry level to 0.
+    "13.64.186.225"
+    "13.66.56.243"
+    "13.68.31.193"
+    "13.68.82.8"
+    "13.68.87.47"
+    "13.68.87.175"
+    "13.68.88.129"
+    "13.68.93.109"
+    "13.73.26.107"
+    "13.74.179.117"
+    "13.76.218.117"
+    "13.76.219.191"
+    "13.76.219.210"
+    "13.77.112.132"
+    "13.77.115.36"
+    "13.78.130.220"
+    "13.78.168.230"
+    "13.78.177.144"
+    "13.78.179.199"
+    "13.78.180.50"
+    "13.78.180.90"
+    "13.78.184.44"
+    "13.78.184.186"
+    "13.78.186.254"
+    "13.78.187.58"
+    "13.78.230.134"
+    "13.78.232.226"
+    "13.78.233.133"
+    "13.78.235.126"
+    "13.78.235.247"
+    "13.79.239.69"
+    "13.79.239.82"
+    "13.80.12.54"
+    "13.81.5.53"
+    "13.83.148.218"
+    "13.83.148.235"
+    "13.83.149.5"
+    "13.83.149.67"
+    "13.85.88.16"
+    "13.86.124.174"
+    "13.86.124.184"
+    "13.86.124.191"
+    "13.88.28.53"
+    "13.88.145.128"
+    "13.92.194.212"
+    "13.92.211.120"
+    "13.107.3.128"
+    "13.107.3.254"
+    "13.107.4.50"
+    "13.107.4.52"
+    "13.107.4.254"
+    "13.107.5.80"
+    "13.107.5.88"
+    "13.107.6.156"
+    "13.107.6.158"
+    "13.107.6.254"
+    "13.107.13.88"
+    "13.107.18.11"
+    "13.107.18.254"
+    "13.107.21.200"
+    "13.107.21.229"
+    "13.107.42.11"
+    "13.107.42.12"
+    "13.107.42.13"
+    "13.107.42.14"
+    "13.107.42.254"
+    "13.107.43.12"
+    "13.107.46.88"
+    "13.107.47.88"
+    "13.107.49.254"
+    "13.107.128.254"
+    "13.107.136.254"
+    "13.107.246.10"
+    "13.107.246.254"
+    "13.107.255.72"
+    "13.107.255.73"
+    "13.107.255.74"
+    "13.107.255.76"
+    "20.36.218.63"
+    "20.36.218.70"
+    "20.36.222.39"
+    "20.36.252.130"
+    "20.41.41.23"
+    "20.42.24.29"
+    "20.42.24.50"
+    "20.44.77.24"
+    "20.44.77.45"
+    "20.44.77.49"
+    "20.44.86.43"
+    "20.45.4.77"
+    "20.45.4.178"
+    "20.185.109.208"
+    "20.189.74.153"
+    "23.96.52.53"
+    "23.96.208.208"
+    "23.97.61.137"
+    "23.97.178.173"
+    "23.97.209.97"
+    "23.99.49.121"
+    "23.99.109.44"
+    "23.99.109.64"
+    "23.99.116.116"
+    "23.99.121.207"
+    "23.100.122.175"
+    "23.101.156.198"
+    "23.101.158.111"
+    "23.102.4.253"
+    "23.102.21.4"
+    "23.103.182.126"
+    "23.103.189.125"
+    "23.103.189.126"
+    "23.103.189.157"
+    "23.103.189.158"
+    "40.67.248.104"
+    "40.67.251.132"
+    "40.67.251.134"
+    "40.67.252.206"
+    "40.67.253.249"
+    "40.67.254.36"
+    "40.67.254.97"
+    "40.67.255.199"
+    "40.68.222.212"
+    "40.69.153.67"
+    "40.69.176.16"
+    "40.69.216.73"
+    "40.69.216.129"
+    "40.69.216.251"
+    "40.69.218.62"
+    "40.69.219.197"
+    "40.69.220.46"
+    "40.69.221.239"
+    "40.69.222.109"
+    "40.69.223.39"
+    "40.69.223.198"
+    "40.70.0.108"
+    "40.70.184.83"
+    "40.70.220.248"
+    "40.70.221.249"
+    "40.74.70.63"
+    "40.77.224.8"
+    "40.77.224.11"
+    "40.77.224.145"
+    "40.77.224.254"
+    "40.77.225.248"
+    "40.77.226.13"
+    "40.77.226.181"
+    "40.77.226.246"
+    "40.77.226.247"
+    "40.77.226.248"
+    "40.77.226.249"
+    "40.77.226.250"
+    "40.77.228.47"
+    "40.77.228.87"
+    "40.77.228.92"
+    "40.77.229.8"
+    "40.77.229.9"
+    "40.77.229.12"
+    "40.77.229.13"
+    "40.77.229.16"
+    "40.77.229.21"
+    "40.77.229.22"
+    "40.77.229.24"
+    "40.77.229.26"
+    "40.77.229.27"
+    "40.77.229.29"
+    "40.77.229.30"
+    "40.77.229.32"
+    "40.77.229.35"
+    "40.77.229.38"
+    "40.77.229.44"
+    "40.77.229.45"
+    "40.77.229.50"
+    "40.77.229.53"
+    "40.77.229.62"
+    "40.77.229.65"
+    "40.77.229.67"
+    "40.77.229.69"
+    "40.77.229.70"
+    "40.77.229.71"
+    "40.77.229.74"
+    "40.77.229.76"
+    "40.77.229.80"
+    "40.77.229.81"
+    "40.77.229.82"
+    "40.77.229.88"
+    "40.77.229.118"
+    "40.77.229.123"
+    "40.77.229.128"
+    "40.77.229.133"
+    "40.77.229.141"
+    "40.77.229.199"
+    "40.77.230.45"
+    "40.77.232.101"
+    "40.79.48.16"
+    "40.79.65.78"
+    "40.79.65.123"
+    "40.79.65.235"
+    "40.79.65.237"
+    "40.79.66.194"
+    "40.79.66.209"
+    "40.79.67.176"
+    "40.79.70.158"
+    "40.79.85.125"
+    "40.80.145.78"
+    "40.83.74.46"
+    "40.83.127.51"
+    "40.83.150.233"
+    "40.85.78.63"
+    "40.89.135.48"
+    "40.90.136.1"
+    "40.90.136.19"
+    "40.90.136.20"
+    "40.90.136.163"
+    "40.90.136.166"
+    "40.90.136.180"
+    "40.90.137.120"
+    "40.90.137.122"
+    "40.90.137.124"
+    "40.90.137.125"
+    "40.90.137.126"
+    "40.90.137.127"
+    "40.90.190.179"
+    "40.90.218.0"
+    "40.90.221.9"
+    "40.91.73.219"
+    "40.91.75.5"
+    "40.91.76.238"
+    "40.91.78.9"
+    "40.91.91.94"
+    "40.91.120.196"
+    "40.91.122.44"
+    "40.97.161.50"
+    "40.101.4.2"
+    "40.101.12.130"
+    "40.101.18.242"
+    "40.101.19.146"
+    "40.101.46.178"
+    "40.101.80.178"
+    "40.101.83.18"
+    "40.101.124.34"
+    "40.101.124.194"
+    "40.101.137.2"
+    "40.101.137.18"
+    "40.101.137.66"
+    "40.102.34.194"
+    "40.112.72.44"
+    "40.112.75.175"
+    "40.112.90.122"
+    "40.112.91.29"
+    "40.113.0.16"
+    "40.113.97.222"
+    "40.114.54.223"
+    "40.114.140.1"
+    "40.114.224.200"
+    "40.114.241.141"
+    "40.115.3.210"
+    "40.115.33.128"
+    "40.115.119.185"
+    "40.117.96.136"
+    "40.117.190.72"
+    "40.118.61.1"
+    "40.118.103.7"
+    "40.118.106.130"
+    "40.119.211.203"
+    "40.121.213.159"
+    "40.122.160.14"
+    "40.126.1.166"
+    "40.126.9.5"
+    "40.127.128.174"
+    "40.127.142.76"
+    "40.127.195.156"
+    "51.105.208.173"
+    "51.136.15.177"
+    "51.136.37.147"
+    "51.137.137.111"
+    "51.140.40.236"
+    "51.140.65.84"
+    "51.140.98.69"
+    "51.140.127.197"
+    "51.140.157.153"
+    "51.141.13.164"
+    "51.141.26.229"
+    "51.141.32.51"
+    "51.141.166.104"
+    "51.143.111.7"
+    "51.143.111.81"
+    "51.144.108.120"
+    "51.145.123.29"
+    "52.97.135.114"
+    "52.97.146.34"
+    "52.97.151.50"
+    "52.97.151.82"
+    "52.97.152.114"
+    "52.97.155.114"
+    "52.97.171.194"
+    "52.98.66.98"
+    "52.109.8.19"
+    "52.109.8.20"
+    "52.109.8.21"
+    "52.109.12.18"
+    "52.109.12.19"
+    "52.109.12.20"
+    "52.109.12.21"
+    "52.109.12.22"
+    "52.109.12.23"
+    "52.109.12.24"
+    "52.109.76.30"
+    "52.109.76.31"
+    "52.109.76.32"
+    "52.109.76.33"
+    "52.109.76.34"
+    "52.109.76.35"
+    "52.109.76.36"
+    "52.109.76.40"
+    "52.109.88.6"
+    "52.109.88.34"
+    "52.109.88.35"
+    "52.109.88.36"
+    "52.109.88.37"
+    "52.109.88.38"
+    "52.109.88.39"
+    "52.109.88.40"
+    "52.109.88.44"
+    "52.109.120.17"
+    "52.109.120.18"
+    "52.109.120.19"
+    "52.109.120.20"
+    "52.109.120.21"
+    "52.109.120.22"
+    "52.109.120.23"
+    "52.109.124.18"
+    "52.109.124.19"
+    "52.109.124.20"
+    "52.109.124.21"
+    "52.109.124.22"
+    "52.109.124.23"
+    "52.109.124.24"
+    "52.113.194.131"
+    "52.114.6.46"
+    "52.114.6.47"
+    "52.114.7.36"
+    "52.114.7.37"
+    "52.114.7.38"
+    "52.114.7.39"
+    "52.114.32.5"
+    "52.114.32.6"
+    "52.114.32.7"
+    "52.114.32.8"
+    "52.114.32.24"
+    "52.114.32.25"
+    "52.114.36.1"
+    "52.114.36.2"
+    "52.114.36.3"
+    "52.114.36.4"
+    "52.114.74.43"
+    "52.114.74.44"
+    "52.114.74.45"
+    "52.114.75.78"
+    "52.114.75.79"
+    "52.114.75.149"
+    "52.114.75.150"
+    "52.114.76.34"
+    "52.114.76.35"
+    "52.114.76.37"
+    "52.114.77.33"
+    "52.114.77.34"
+    "52.114.77.137"
+    "52.114.77.164"
+    "52.114.88.19"
+    "52.114.88.20"
+    "52.114.88.21"
+    "52.114.88.22"
+    "52.114.88.28"
+    "52.114.88.29"
+    "52.114.128.7"
+    "52.114.128.8"
+    "52.114.128.9"
+    "52.114.128.10"
+    "52.114.128.43"
+    "52.114.128.44"
+    "52.114.128.58"
+    "52.114.132.14"
+    "52.114.132.20"
+    "52.114.132.21"
+    "52.114.132.22"
+    "52.114.132.23"
+    "52.114.132.73"
+    "52.114.132.74"
+    "52.114.158.50"
+    "52.114.158.51"
+    "52.114.158.52"
+    "52.114.158.53"
+    "52.114.158.91"
+    "52.114.158.92"
+    "52.114.158.102"
+    "52.136.230.174"
+    "52.138.148.87"
+    "52.138.148.89"
+    "52.138.148.159"
+    "52.138.204.217"
+    "52.138.216.83"
+    "52.142.84.61"
+    "52.142.114.2"
+    "52.156.204.185"
+    "52.157.234.37"
+    "52.158.24.209"
+    "52.158.24.229"
+    "52.158.25.39"
+    "52.158.208.111"
+    "52.158.238.42"
+    "52.161.15.246"
+    "52.163.118.68"
+    "52.164.191.55"
+    "52.164.227.208"
+    "52.164.240.33"
+    "52.164.240.59"
+    "52.164.241.205"
+    "52.164.251.44"
+    "52.166.110.64"
+    "52.166.110.215"
+    "52.166.120.77"
+    "52.167.88.112"
+    "52.167.222.82"
+    "52.167.222.147"
+    "52.167.223.135"
+    "52.168.24.174"
+    "52.169.71.150"
+    "52.169.82.131"
+    "52.169.83.3"
+    "52.169.87.42"
+    "52.169.123.48"
+    "52.169.189.83"
+    "52.170.83.19"
+    "52.170.194.77"
+    "52.171.136.200"
+    "52.173.152.64"
+    "52.174.22.246"
+    "52.175.23.79"
+    "52.175.30.196"
+    "52.176.224.96"
+    "52.178.38.151"
+    "52.178.147.240"
+    "52.178.151.212"
+    "52.178.161.41"
+    "52.178.163.85"
+    "52.178.178.16"
+    "52.178.192.146"
+    "52.178.193.116"
+    "52.178.223.23"
+    "52.179.13.204"
+    "52.183.47.176"
+    "52.183.104.36"
+    "52.183.114.173"
+    "52.183.118.171"
+    "52.184.82.129"
+    "52.184.152.136"
+    "52.184.155.206"
+    "52.184.168.116"
+    "52.187.60.107"
+    "52.188.72.233"
+    "52.188.77.27"
+    "52.225.136.36"
+    "52.226.130.114"
+    "52.229.39.152"
+    "52.229.170.171"
+    "52.229.170.224"
+    "52.229.171.86"
+    "52.229.171.202"
+    "52.229.172.155"
+    "52.229.174.29"
+    "52.229.174.172"
+    "52.229.174.233"
+    "52.229.175.79"
+    "52.230.10.183"
+    "52.230.85.180"
+    "52.230.216.17"
+    "52.230.216.157"
+    "52.230.220.159"
+    "52.230.223.92"
+    "52.230.223.167"
+    "52.230.240.94"
+    "52.232.16.77"
+    "52.232.19.76"
+    "52.232.69.150"
+    "52.232.225.93"
+    "52.233.199.249"
+    "52.236.42.239"
+    "52.236.43.202"
+    "52.239.137.4"
+    "52.239.150.170"
+    "52.239.151.138"
+    "52.239.151.170"
+    "52.239.156.74"
+    "52.239.156.138"
+    "52.239.157.138"
+    "52.239.157.202"
+    "52.239.177.36"
+    "52.239.177.68"
+    "52.239.177.100"
+    "52.239.177.228"
+    "52.239.184.10"
+    "52.239.184.42"
+    "52.239.207.100"
+    "52.248.96.36"
+    "52.249.24.101"
+    "64.4.16.212"
+    "64.4.16.214"
+    "64.4.16.216"
+    "64.4.16.218"
+    "64.4.27.50"
+    "64.4.54.18"
+    "64.4.54.22"
+    "64.4.54.253"
+    "65.52.100.91"
+    "65.52.100.92"
+    "65.52.100.93"
+    "65.52.100.94"
+    "65.52.108.29"
+    "65.52.108.33"
+    "65.52.108.59"
+    "65.52.108.90"
+    "65.52.108.92"
+    "65.52.108.153"
+    "65.52.108.154"
+    "65.52.108.185"
+    "65.52.161.64"
+    "65.52.226.14"
+    "65.54.187.128"
+    "65.54.187.130"
+    "65.54.187.131"
+    "65.54.187.132"
+    "65.54.187.134"
+    "65.54.198.196"
+    "65.55.29.238"
+    "65.55.44.51"
+    "65.55.44.54"
+    "65.55.44.108"
+    "65.55.44.109"
+    "65.55.83.120"
     "65.55.108.23"
+    "65.55.113.11"
+    "65.55.113.12"
+    "65.55.113.13"
+    "65.55.130.50"
+    "65.55.163.76"
+    "65.55.163.78"
+    "65.55.163.80"
+    "65.55.176.90"
+    "65.55.242.254"
+    "65.55.252.43"
+    "65.55.252.63"
+    "65.55.252.70"
+    "65.55.252.71"
+    "65.55.252.72"
+    "65.55.252.93"
+    "65.55.252.190"
+    "65.55.252.202"
+    "66.119.144.157"
+    "66.119.144.158"
+    "66.119.144.189"
+    "66.119.144.190"
+    "66.119.147.131"
+    "104.40.210.32"
+    "104.40.211.35"
+    "104.41.207.73"
+    "104.41.219.140"
+    "104.42.41.237"
+    "104.43.137.66"
+    "104.43.139.21"
+    "104.43.140.223"
+    "104.43.203.255"
+    "104.43.228.53"
+    "104.43.228.202"
+    "104.43.237.169"
+    "104.44.80.172"
+    "104.44.88.24"
+    "104.44.88.28"
+    "104.44.88.103"
+    "104.45.11.195"
+    "104.45.18.177"
+    "104.45.177.233"
+    "104.45.214.112"
+    "104.46.1.211"
+    "104.46.38.64"
+    "104.46.91.34"
+    "104.208.248.16"
+    "104.209.172.133"
+    "104.210.4.77"
+    "104.210.40.87"
+    "104.210.212.243"
+    "104.211.96.15"
+    "104.214.35.244"
+    "104.214.77.221"
+    "104.214.150.122"
+    "104.214.220.181"
+    "104.215.146.200"
+    "111.221.29.11"
+    "111.221.29.40"
+    "111.221.29.134"
+    "111.221.29.253"
+    "111.221.29.254"
+    "131.253.6.87"
+    "131.253.6.103"
+    "131.253.14.227"
+    "131.253.14.229"
+    "131.253.14.230"
+    "131.253.14.231"
+    "131.253.33.50"
+    "131.253.33.200"
+    "131.253.33.203"
+    "131.253.33.254"
+    "131.253.34.230"
+    "131.253.34.234"
     "134.170.30.202"
-    "137.116.81.24"
+    "134.170.30.203"
+    "134.170.30.204"
+    "134.170.30.221"
+    "134.170.51.187"
+    "134.170.51.188"
+    "134.170.51.190"
+    "134.170.51.246"
+    "134.170.51.247"
+    "134.170.51.248"
+    "134.170.52.151"
+    "134.170.53.29"
+    "134.170.53.30"
+    "134.170.115.55"
+    "134.170.115.56"
+    "134.170.115.60"
+    "134.170.115.62"
+    "134.170.165.248"
+    "134.170.165.249"
+    "134.170.165.251"
+    "134.170.165.253"
+    "134.170.178.97"
+    "134.170.185.70"
+    "134.170.188.248"
+    "134.170.235.16"
+    "137.116.44.10"
+    "137.116.234.82"
+    "137.117.142.136"
+    "137.117.144.39"
+    "137.117.235.16"
+    "137.117.243.30"
+    "137.135.62.92"
+    "137.135.251.63"
+    "138.91.122.49"
+    "157.55.109.7"
+    "157.55.109.224"
+    "157.55.109.226"
+    "157.55.109.228"
+    "157.55.109.230"
+    "157.55.109.232"
+    "157.55.129.21"
+    "157.55.133.204"
+    "157.55.134.136"
+    "157.55.134.138"
+    "157.55.134.140"
+    "157.55.134.142"
+    "157.55.135.128"
+    "157.55.135.130"
+    "157.55.135.132"
+    "157.55.135.134"
+    "157.55.240.89"
+    "157.55.240.126"
+    "157.55.240.220"
+    "157.56.57.5"
+    "157.56.74.250"
+    "157.56.77.138"
+    "157.56.77.139"
+    "157.56.77.140"
+    "157.56.77.141"
+    "157.56.77.148"
+    "157.56.77.149"
+    "157.56.91.77"
+    "157.56.96.54"
+    "157.56.96.58"
+    "157.56.96.123"
+    "157.56.96.157"
+    "157.56.106.184"
+    "157.56.106.185"
     "157.56.106.189"
-    "184.86.53.99"
-    "204.79.197.200"
+    "157.56.113.217"
+    "157.56.121.89"
+    "157.56.124.87"
+    "157.56.149.250"
+    "157.56.194.72"
+    "157.56.194.73"
+    "157.56.194.74"
+    "168.61.24.141"
+    "168.61.146.25"
+    "168.61.149.17"
+    "168.61.172.71"
+    "168.62.187.13"
+    "168.63.18.79"
+    "168.63.100.61"
+    "168.63.102.42"
+    "168.63.108.233"
+    "191.234.72.183"
+    "191.234.72.186"
+    "191.234.72.188"
+    "191.234.72.190"
+    "191.236.155.80"
+    "191.237.208.126"
+    "191.237.218.239"
+    "191.239.50.18"
+    "191.239.50.77"
+    "191.239.52.100"
+    "191.239.54.52"
+    "191.239.213.197"
+    "204.152.141.244"
+    "207.46.7.252"
+    "207.46.26.12"
+    "207.46.26.14"
+    "207.46.26.16"
+    "207.46.26.18"
+    "207.46.101.29"
+    "207.46.114.58"
+    "207.46.114.61"
+    "207.46.153.155"
+    "207.46.194.14"
+    "207.46.194.25"
+    "207.46.194.33"
+    "207.46.194.40"
+    "207.46.223.94"
+    "207.68.166.254"
 )
-# Check firewall ruls and remove if already set
+# Check firewall rules and remove it, if already set
 Remove-NetFirewallRule -DisplayName "Anti-Telemetry IPs" -ErrorAction SilentlyContinue
 # Write new rules and give it a name
 New-NetFirewallRule -DisplayName "Anti-Telemetry IPs" -Direction Outbound ` -Action Block -RemoteAddress ([string[]]$ips)
@@ -5348,6 +6166,13 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MBAM" -Name "NoStartupDelay" -P
 # (FIXME:)
 # Computer\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Policies\Microsoft\FVE
 # upper layer + hidden toggles ^^
+
+
+# Import HOSTS file
+# FIXME:
+#[Net.ServicePointManager]::SecurityProtocol = "tls13, tls12"
+#Invoke-WebRequest "https://CHEF-KOCH.github.io/compressed/blacklist-test.txt" -OutFile "C:\Windows\System32\drivers\etc\hosts"
+#ipconfig /flushdns
 
 
 # No NOT use this !
@@ -5498,7 +6323,11 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "Encryption
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\FVE" -Name "EncryptionMethodWithXtsRdv" -PropertyType DWord -Value 4 -Force
 ##########################################################
 ######              MS Office & LibreOffice         ######
+# FIXME: Check if Office is present or not
 ##########################################################
+# Disable Office Cursor Animation ("Feedback Animation")
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\15.0\Common\Graphics" -Name "DisableAnimations" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\Common\Graphics" -Name "DisableAnimations" -PropertyType DWord -Value 1 -Force
 # Turn off OSM telemetry
 # Logging
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\16.0\OSM" -Name "Enablelogging" -PropertyType DWord -Value 0 -Force
@@ -5507,11 +6336,32 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\16.0\OSM" -Name
 # File Obfuscation
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\16.0\OSM" -Name "EnableFileObfuscation" -PropertyType DWord -Value 1 -Force
 # Common Telemetry
-Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" -Name "sendtelemetry" -PropertyType DWord -Value 3 -Force
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" -Name "DisableTelemetry" -PropertyType DWord -Value 1 -Force
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" -Name "qmenable" -PropertyType DWord -Value 1 -Force
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" -Name "sendcustomerdata" -PropertyType DWord -Value 0 -Force
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" -Name "sendtelemetry" -PropertyType DWord -Value 3 -Force
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\Common\ClientTelemetry" -Name "updatereliabilitydata" -PropertyType DWord -Value 0 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry" -Name "SendTelemetry" -PropertyType DWord -Value 3 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry" -Name "DisableTelemetry" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\16.0\Common\Privacy" -Name "disconnectedstate" -PropertyType DWord -Value 2 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\16.0\Common\Privacy" -Name "usercontentdisabled" -PropertyType DWord -Value 2 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\16.0\Common\Privacy" -Name "downloadcontentdisabled" -PropertyType DWord -Value 2 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\16.0\Common\Privacy" -Name "controllerconnectedservicesenabled" -PropertyType DWord -Value 2 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry\Common\General" -Name "disableboottoofficestart" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry\Common\General" -Name "optindisable" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry\Common\General" -Name "shownfirstrunoptin" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry\Common\General" -Name "ShownFileFmtPrompt" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\Lync" -Name "disableautomaticsendtracing" -PropertyType DWord -Value 1 -Force
+# RTM <-> VLCS
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\User Settings\CustomSettings\Create\Software\Microsoft\Office\Common\ClientTelemetry\Firstrun" -Name "BootedRTM" -PropertyType DWord -Value 1 -Force
+# Do not validate files (triggers AV/metadata)
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\Common\Security\FileValidation" -Name "disablereporting" -PropertyType DWord -Value 1 -Force
+# Watson (debug + performance + telemetry)
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\Common\PTWatson" -Name "PTWOptIn" -PropertyType DWord -Value 0 -Force
+# Outlook logging
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\Outlook\Options\Mail" -Name "EnableLogging" -PropertyType DWord -Value 0 -Force
+# World logging
+Set-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Office\16.0\Word\Options" -Name "EnableLogging" -PropertyType DWord -Value 0 -Force
 # Common Feedback
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\16.0\Common\feedback" -Name "enabled" -PropertyType DWord -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Office\16.0\Common\feedback" -Name "includescreenshot" -PropertyType DWord -Value 0 -Force
@@ -5547,9 +6397,10 @@ Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetry\OfficeTelemet
 #Get-ScheduledTask -TaskPath "\Microsoft\Office\Office 16 Subscription Heartbeat\" | Disable-ScheduledTask
 #Get-ScheduledTask -TaskPath "\Microsoft\Office\Office 17 Subscription Heartbeat\" | Disable-ScheduledTask
 # MS Office Telemetry scheduled task fallback
-Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetryAgentFallBack" | Out-Null
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetry\AgentFallBack" | Out-Null
 # MS Office Login telemetry agent watcher
-Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetryAgentLogOn" | Out-Null
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeTelemetry\AgentLogOn" | Out-Null
+Disable-ScheduledTask -TaskName "\Microsoft\Office\OfficeInventory\AgentLogOn" | Out-Null
 <#
 # Turn on Microsoft Office Updates
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" -Name "enableautomaticupdates" -PropertyType DWord -Value 1 -Force
@@ -5654,7 +6505,16 @@ Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Office\14.0\msproject\
 # Turn off Office Packer Objects (OLE) (FIXME:)
 # https://blog.trendmicro.com/trendlabs-security-intelligence/new-cve-2014-4114-attacks-seen-one-week-after-fix/
 # https://docs.Microsoft.com/en-us/office365/troubleshoot/activation/control-block-ole-com
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\16.0\Common\COM Compatibility" -Name "ActivationFilterOverride " -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\16.0\Common\COM Compatibility" -Name "ActivationFilterOverride" -PropertyType DWord -Value 1 -Force
+
+
+##########################################################
+###### 				Local Account                   ######
+##########################################################
+# Default Local Account Token Filter Policy
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "LocalAccountTokenFilterPolicy" -PropertyType DWord -Value 1 -Force
+
+
 
 
 ##########################################################
@@ -5673,7 +6533,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DenyDeviceIDs" -PropertyType DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableAutomaticRestartSignOn" -PropertyType DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DSCAutomationHostEnabled" -PropertyType DWord -Value 1
-# ; https://blogs.technet.Microsoft.com/system_center_configuration_manager_operating_system_deployment_support_blog/2017/02/23/no-mouse-cursor-during-configmgr-osd-task-sequence/
+# https://blogs.technet.Microsoft.com/system_center_configuration_manager_operating_system_deployment_support_blog/2017/02/23/no-mouse-cursor-during-configmgr-osd-task-sequence/
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableCursorSuppression" -PropertyType DWord -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableFullTrustStartupTasks" -PropertyType DWord -Value 2
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableInstallerDetection" -PropertyType DWord -Value 1
@@ -5718,6 +6578,10 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\System" -Name 
 # Todo: Find a way to detect and disable all _xxx services automatically.                                  ######
 # Todo: Sysrep needs dmwappushserivce.                                                                     ######
 #################################################################################################################
+# Disable all the services that doesn't need the OS to boot
+# FIXME:
+#Get-Service -Exclude DeviceInstall,Netman,NetSetupSvc,VaultSvc,vds,Appinfo,StateRepository,SysMain,seclogon,EventLog,KeyIso,trustedinstaller,Eaphost,dot3svc,BFE,BrokerInfrastructure,CoreMessagingRegistrar,DcomLaunch,Dhcp,LSM,PlugPlay,AudioEndpointBuilder,Audiosrv,ProfSvc,RpcEptMapper,RpcSs,sppsvc,CryptSvc,DeviceInstall,EventSystem,msiserver,nsi,Power,Spooler,swprv,UserManager | Set-Service -StartupType Disabled
+
 # Turn off Autologger and clear the content
 #Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger" -Name "AutoLogger-Diagtrack-Listener" -PropertyType Dword -Value 0
 New-Item "%ProgramData%\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl" -ItemType File -Force
@@ -5804,27 +6668,28 @@ $services = @(
     "dmwappushservice"							# WAP Push Message Routing Service (see known issues) | Telemetry
     "HomeGroupListener"							# HomeGroup Listener  | Telemetry (removed since 1903+)
     "HomeGroupProvider"							# HomeGroup Provider    | Telemetry
-    "lfsvc"								    	# Geolocation Service   | Telemetry
+    "lfsvc"									    # Geolocation Service   | Telemetry
     "MapsBroker"								# Downloaded Maps Manager   | Privacy
-    "ndu"								        # Windows Network Data Usage Monitor    | Privacy (data leakage?)
+    "ndu"									    # Windows Network Data Usage Monitor    | Privacy (data leakage?)
     "NetTcpPortSharing"							# Net.Tcp Port Sharing Service
     "RemoteAccess"								# Routing and Remote Access
     "RemoteRegistry"							# Remote Registry | Security
     #"SharedAccess"								# Internet Connection Sharing (ICS)
-    "TrkWks"								    # Distributed Link Tracking Client
-    "WbioSrvc"								    # Windows Biometric Service (required for Fingerprint reader / facial detection)
+    "TrkWks"									# Distributed Link Tracking Client
+    "WbioSrvc"									# Windows Biometric Service (required for Fingerprint reader / facial detection)
     "WMPNetworkSvc"								# Windows Media Player Network Sharing Service
-    "wscsvc"								    # Windows Security Center Service
-    "wlidsvc"                                   # Disable ability to use Microsoft Accounts
+    "wscsvc"									# Windows Security Center Service
+    "wlidsvc"									# Disable ability to use Microsoft Accounts (Microsoft Account Sign-In Assistant)
     #"BFE"										# Base Filtering Engine - Disable only if you don't use Windows Firewall e.g. for Comodo
 	#"Dnscache "								# DNS Client (only if you use other DNS systems like Unbound/DNSCrypt) | Security & Telemetry
 	#"EventSystem"								# COM+ Event System (security but problematic)
-	#"iphlpsvc"									# IP Helper (IPv6 translation
+	#"iphlpsvc"									# IP Helper (IPv6 translation)
 	#"IpxlatCfgSvc"								# IP Translation Configuration Service
 	#"Winmgmt"									# Windows Management Instrumentation | Security -> problematic
     #"AppMgmt"									# Application Management (needed for GPO software)
-    #"WlanSvc"                                 	# WLAN AutoConfig | Security
-    #"WSearch"                                 	# Windows Search used by e.g. Cortana & file index
+    #"wcncsvc"									# Cortana
+    #"WlanSvc"									# WLAN AutoConfig | Security
+    "WSearch"									# Windows Search used by e.g. Cortana & file index
 )
 
 
@@ -5904,6 +6769,20 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\Backup\Server"
 Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\Backup\Server" -Name "NoBackupToOptical" -PropertyType DWord -Value 1 -Force
 # Disallow "RunOnce" Backups
 #Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\Backup\Server" -Name "NoRunNowBackup" -PropertyType DWord -Value 0 -Force
+
+###############################################
+######              OpenSSH              ######
+###############################################
+# FIXME:
+# Offline?!
+#Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+# Install the OpenSSH Server
+#Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+# Uninstall the OpenSSH Client
+#Remove-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+# Uninstall the OpenSSH Server
+#Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
 
 
 
@@ -6070,6 +6949,12 @@ If (Test-Path "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl") {
 }
 icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
 
+
+# Deny Access to Diagnosis Folder
+# FIXME:
+#icacls "C:\ProgramData\Microsoft\Diagnosis" /remove:g system /inheritance:r /deny system:(OI)(CI)f
+
+
 ###############################################
 ###### 	    Windows Media Player (WMP)   ######
 ######              v11+                 ######
@@ -6200,7 +7085,7 @@ Start-Sleep 2
 # Enable encrypted NTFS pagefile
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "System\CurrentControlSet\Policies" -Name "NtfsEncryptPagingFile" -PropertyType DWord -Data 1
 Start-Sleep 2
-# Disable (global) Telemetry
+# Disable (global) Telemetry (Enterprise/EDU)
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -PropertyType DWord -Data 0
 Start-Sleep 2
 # Turn off Windows Sidebar
@@ -6293,6 +7178,7 @@ Start-Sleep 2
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -PropertyType DWord -Data 1
 Start-Sleep 2
 # Turn off Advertising ID
+# EDU only!
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -PropertyType DWord -Data 1
 Start-Sleep 2
 # Turn off Application Impact Telemetry
@@ -6417,6 +7303,11 @@ Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.
 Start-Sleep 2
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "**del.DetectionFrequency" -PropertyType String -Data ""
 Start-Sleep 2
+# Prevent Auto reboots
+# http://king.geek.nz/2016/10/18/wu-windows-1607/
+# 2 = Notify before download
+# 3 = Automatically download and notify of installation
+# schtasks /change /tn \Microsoft\Windows\UpdateOrchestrator\Reboot /DISABLE
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -PropertyType DWord -Data 2
 Start-Sleep 2
 Set-PolicyFileEntry -Path $env:systemroot\system32\GroupPolicy\Machine\registry.pol -Key "SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "DetectionFrequencyEnabled" -PropertyType DWord -Data 0
@@ -6568,9 +7459,10 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\Troubleshootin
 # 2 = Handler Based
 # 3 = Most Secure
 #Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "UseTrustedHandlers" -PropertyType DWord -Value 3 -Force
-# AM - Mark Zone On Saved Atttachments
+# Do not preserve zone information in file attachments (avoid metadata leakage)
+# https://getadmx.com/?Category=Windows_10_2016&Policy=Microsoft.Policies.AttachmentManager::AM_MarkZoneOnSavedAtttachments
 # Windows XP SP2+
-#Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "SaveZoneInformation" -PropertyType DWord -Value 1 -Force
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "SaveZoneInformation" -PropertyType DWord -Value 1 -Force
 # AM - Remove Zone Info
 # Windows XP SP2+
 #Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" -Name "HideZoneInfoOnProperties" -PropertyType DWord -Value 1 -Force
@@ -6655,6 +7547,16 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\Reliability
 # 2 = Workstation only
 # 3 = Server only
 # # FIXME: Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\Reliability" -Name "ShutdownReasonUI" -PropertyType DWord -Value 1 -Force
+
+
+##########################################################
+###### 		    Device Installation Restrictions    ######
+##########################################################
+# Allow installation of devices that match any of these device instance IDs
+# FIXME: Set-ItemProperty -Path "HKLM:\System\Device Installation\Device Installation Restrictions" -Name "x000D_" -PropertyType DWord -Value 0 -Force
+# Prevent installation of devices that match any of these device instance IDs
+# FIXME: Set-ItemProperty -Path "HKLM:\System\Device Installation\Device Installation Restrictions" -Name "x000D_" -PropertyType DWord -Value 0 -Force
+
 
 
 ##########################################################
@@ -6929,6 +7831,17 @@ New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows NT\Driver Sign
 
 
 ##########################################################
+######  				Driver Policy	            ######
+##########################################################
+# Prevent Driver Changes
+# FIXME:
+#New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceIDs" -PropertyType DWord -Value 1 -Force
+#New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceIDsRetroactive" -PropertyType DWord -Value 0 -Force
+#New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions\DenyDeviceIDs" -Name "DenyDeviceIDs" -PropertyType REGZ "PCI\VEN_XXXX&DEV_XXXX&SUBSYS_XXXXXXXX&REV_XX" -Force
+
+
+
+##########################################################
 ######  				    TPM   			        ######
 ##########################################################
 <#
@@ -7197,7 +8110,8 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalizatio
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -ErrorAction SilentlyContinue
 # Turn off Lock Screen Image
 #Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "LockScreenOverlaysDisabled" -PropertyType DWord -Value 1
-# Set your own Lock Screen image (FIXME:)
+# Set your own Lock Screen image - Static Lock Screen
+# (FIXME:)
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "LockScreenImage" -PropertyType DWord -Value "C:\windows\web\screen\lockscreen.jpg"
 # Do not allow to change the LockScreen
 # Windows 8+
@@ -7392,7 +8306,7 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\CurrentVers
 #Set-ItemProperty "HKCU:\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "NoCloudApplicationNotification" -PropertyType DWord -Value 1 -Force
 # Disable Disk Health Update Model
 # Windows 10 RS3+
-#Set-ItemProperty "HKLM:\Software\Policies\Microsoft\Windows\StorageHealth" -Name "AllowDiskHealthModelUpdates" -PropertyType DWord -Value 0 -Force
+Set-ItemProperty "HKLM:\Software\Policies\Microsoft\Windows\StorageHealth" -Name "AllowDiskHealthModelUpdates" -PropertyType DWord -Value 0 -Force
 #Set-ItemProperty "HKCU:\Software\Policies\Microsoft\Windows\StorageHealth" -Name "AllowDiskHealthModelUpdates" -PropertyType DWord -Value 0 -Force
 # Disable app Toast Notifications
 #Set-ItemProperty "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "NoToastApplicationNotificationOnLockScreen" -PropertyType DWord -Value 0 -Force
@@ -7437,6 +8351,13 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\CurrentVers
 ###### 	 Grab OpenVPN/WireGuard file automatically  ######
 ######		    Example (for the lazy ones)         ######
 ##########################################################
+# Add VPN Interface (PIA example)
+# https://docs.microsoft.com/en-us/powershell/module/nettcpip/get-netroute?view=win10-ps
+# https://msdn.microsoft.com/en-us/library/hh872448(v=vs.85).aspx
+# https://superuser.com/questions/966832/windows-10-dns-resolution-via-vpn-connection-not-working/966833#966833
+#Add-VpnConnection -Name PIA -ServerAddress swiss.privateinternetaccess.com
+#Set-VpnConnection -Name "PIA" -DnsSuffix swiss.privateinternetaccess.com
+#Set-VpnConnection -Name "PIA" -SplitTunneling $True
 #New-Item -ItemType Directory -Force -Path "~\OpenVPN\config"
 #Invoke-WebRequest "https://insert-your-link-here.ovpn" -OutFile "~\OpenVPN\config\US East, Ashburn.ovpn"
 
@@ -7467,6 +8388,16 @@ Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\CurrentVers
 # FIXME: Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "SettingsPageVisibility" -PropertyType Dword -Value 0 -Force
 
 
+
+
+##########################################################
+###### 				    PATH                        ######
+##########################################################
+# Android Platform Tools
+#SETX /M path "%path%;C:\Program Files\platform-tools"
+
+
+
 ##########################################################
 ###### 	    Unpin default shortcuts from Taskbar    ######
 ##########################################################
@@ -7477,6 +8408,18 @@ $appname = "Store"
 ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | Where-Object{$_.Name -eq $appname}).Verbs() | Where-Object{$_.Name.replace('&','') -match 'Unpin from taskbar'} | ForEach-Object{$_.DoIt(); $exec = $true}
 
 
+
+
+# Restore original path if modified
+if ($origPath.Length -gt 0)
+{
+    $env:Path = $origPath
+}
+# Restore original output encoding
+$OutputEncoding = $OutputEncodingPrevious
+
+# Restore original directory location
+Pop-Location
 
 #####################################################
 ###### 				    Restart warning             #
@@ -7491,3 +8434,5 @@ $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 Write-Host "Restarting..."
 Restart-Computer
 # FIXME: Crash explorer and avoid every restart BS cause restarting is so 1999.
+
+
